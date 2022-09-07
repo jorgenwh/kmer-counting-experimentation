@@ -1,3 +1,5 @@
+#!/bin/bash
+
 RELEASE=0
 
 # Parse arguments and set relevant flags
