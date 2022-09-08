@@ -7,10 +7,10 @@
 
 DNABitset::DNABitset(const char *dna_string, const size_t dna_length) {
   m_length = dna_length;
-  size_t bitset_bytes = (dna_length / 4) + (dna_length % 4 != 0);
+  m_bytes = (dna_length / 4) + (dna_length % 4 != 0);
 
-  m_bitset = new uint8_t[bitset_bytes];
-  memset(m_bitset, 0, bitset_bytes);
+  m_bitset = new uint8_t[m_bytes];
+  memset(m_bitset, 0, m_bytes);
 
   for (size_t i = 0; i < dna_length; i++) {
     uint8_t shift = 6 - 2*(i%4);
