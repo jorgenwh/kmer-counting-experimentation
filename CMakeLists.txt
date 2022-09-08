@@ -19,7 +19,7 @@ else()
 endif()
 
 file(GLOB SOURCES
-  src/fasta_parser.cpp  
+  src/dnabitset.cpp  
 )
 
 add_executable(kmer src/main.cpp ${SOURCES})

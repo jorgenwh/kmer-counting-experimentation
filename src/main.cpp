@@ -1,17 +1,13 @@
+#include <iostream>
 #include <stdio.h>
 #include <string>
+#include <fstream>
 
-#include "fasta_parser.h"
+#include "dnabitset.h"
 
 int main(int argc, char **argv) {
-
-  std::string filename = argv[0];
-  printf("%s\n", filename);
-
-  //size_t chunk_size = std::stoi(argv[1]);
-  size_t chunk_size = 100;
-
-  FastaParser parser(filename, chunk_size);
+  const char *filename = argv[1];
+  std::cout << "Filename: " << filename << "\n";
 
   return 0;
 }
