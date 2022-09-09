@@ -1,9 +1,13 @@
+#include <iostream>
 #include <stdio.h>
 #include <inttypes.h>
 #include <string.h>
 #include <assert.h>
+#include <bitset>
 
 #include "dnabitset.h"
+
+uint8_t shifts[4] = {6, 4, 2, 0};
 
 DNABitset::DNABitset(const char *dna_string, const size_t dna_length) {
   m_length = dna_length;
@@ -13,25 +17,28 @@ DNABitset::DNABitset(const char *dna_string, const size_t dna_length) {
   memset(m_bitset, 0, m_bytes);
 
   for (size_t i = 0; i < dna_length; i++) {
-    uint8_t shift = 6 - 2*(i%4);
+    // The shift determines which of the 4 positions within a byte the 2 bit DNA base will be
+    // stored
+    uint8_t shift = shifts[i%4];
+    uint8_t bitbase;
 
     switch (dna_string[i]) {
       case 'A': case 'a':
-        m_bitset[i/4] |= BASE_A << shift;
+        bitbase = BASE_A << shift;
         break;
       case 'C': case 'c':
-        m_bitset[i/4] |= BASE_C << shift;
+        bitbase = BASE_C << shift;
         break;
       case 'G': case 'g':
-        m_bitset[i/4] |= BASE_G << shift;
+        bitbase = BASE_G << shift;
         break;
       case 'T': case 't':
-        m_bitset[i/4] |= BASE_T << shift;
+        bitbase = BASE_T << shift;
         break;
       default:
         assert(0);
     }
-    shift = (shift == 0) ? 6 : shift - 2;
+    m_bitset[i/4] |= bitbase;
   }
 }
 
@@ -39,12 +46,12 @@ char *DNABitset::to_string() const {
   char *dna_string = new char[m_length + 1];
 
   for (size_t i = 0; i < m_length; i++) {
-    uint8_t shift = 6 - 2*(i%4);
+    uint8_t shift = shifts[i%4];
     uint8_t mask = BASE_MASK << shift;
 
     // Get the i-th base
-    uint8_t base = (m_bitset[i/4] & mask) >> shift;
-    switch (base) {
+    uint8_t bitbase = (m_bitset[i/4] & mask) >> shift;
+    switch (bitbase) {
       case BASE_A:
         dna_string[i] = 'a';
         break;
@@ -63,4 +70,8 @@ char *DNABitset::to_string() const {
   }
   dna_string[m_length] = '\0';
   return dna_string;
+}
+
+char *DNABitset::to_bitstring() const {
+  return nullptr;
 }

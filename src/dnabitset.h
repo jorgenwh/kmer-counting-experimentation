@@ -12,6 +12,8 @@
 #include <string.h>
 #include <assert.h>
 
+extern uint8_t shifts[4];
+
 enum {
   BASE_A = 0x0, // Binary 00
   BASE_C = 0x1, // Binary 01
@@ -25,6 +27,7 @@ public:
   ~DNABitset() { delete[] m_bitset; }
 
   char *to_string() const;
+  char *to_bitstring() const;
   size_t bytes() const { return m_bytes; }
   size_t length() const { return m_length; }
 private:
