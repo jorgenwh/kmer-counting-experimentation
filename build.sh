@@ -102,7 +102,7 @@ cd ..
 # Run valgrind
 if [ $VALGRIND = 1 ]; then
   if [ $PYTHON_MODULE = 1 ]; then
-    printf "\33[91mWARNING\33[0m: Cannot run valgrind on python module.\n"
+    printf "\33[91mWARNING\33[0m: Cannot run valgrind on python module. Exiting ...\n"
     exit 0
   fi
   run_valgrind
