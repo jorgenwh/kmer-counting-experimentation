@@ -8,6 +8,8 @@ VALGRIND=0
 PYTHON_MODULE=0
 COMPILE=0
 
+NUM_CORES=1
+
 # Parse arguments and set relevant flags
 for var in "$@" 
 do
@@ -33,6 +35,10 @@ function abort_if_not_ok() {
     cd ..
     exit $?
   fi
+}
+
+function get_num_cores() {
+  NUM_CORES=$(grep -c ^processor /proc/cpuinfo)
 }
 
 function run_cmake() {
@@ -88,7 +94,8 @@ run_cmake
 abort_if_not_ok
 
 # Build binaries
-make
+get_num_cores
+make -j${NUM_CORES}
 abort_if_not_ok
 cd ..
 
