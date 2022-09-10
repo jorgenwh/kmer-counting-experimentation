@@ -5,16 +5,20 @@ CHUNK_SIZE=5000000
 
 RELEASE=0
 VALGRIND=0
+PYTHON_MODULE=0
+COMPILE=0
 
 # Parse arguments and set relevant flags
-for var in "$@"
+for var in "$@" 
 do
-  if [ "$var" = "-r" ]; # Release build (optimizied)
-  then
+  if [ "$var" = "-r" ]; then # Release build (optimizied)
     RELEASE=1
-  elif [ "$var" = "-v" ]; # Run valgrind 
-  then
+  elif [ "$var" = "-v" ]; then # Run valgrind 
     VALGRIND=1
+  elif [ "$var" = "-py" ]; then # Compile the python module
+    PYTHON_MODULE=1
+  elif [ "$var" = "-c" ]; then # Only compile without running the output
+    COMPILE=1
   fi
 done
 
@@ -32,22 +36,44 @@ function abort_if_not_ok() {
 }
 
 function run_cmake() {
-  if [ $RELEASE = 1 ]; 
-  then
-    cmake .. -D CMAKE_BUILD_TYPE=Release
+  CMAKE_ARGS=""
+
+  if [ $RELEASE = 1 ]; then
+    CMAKE_ARGS+="-D CMAKE_BUILD_TYPE=Release"
   else
-    cmake .. -D CMAKE_BUILD_TYPE=Debug
+    CMAKE_ARGS+="-D CMAKE_BUILD_TYPE=Debug"
   fi
+
+  if [ $PYTHON_MODULE = 1 ]; then
+    CMAKE_ARGS+=" -D PY_MODULE=True"
+  else
+    CMAKE_ARGS+=" -D PY_MODULE=False"
+  fi
+
+  cmake .. $CMAKE_ARGS
 }
 
 function run_output() {
   printf -- "\n---------- PROGRAM OUTPUT ----------\n"
-  ./temp/kmer $FASTA_FILE
+  ./temp/f2i $FASTA_FILE
+}
+
+function run_python() {
+  printf -- "\n---------- PROGRAM OUTPUT ----------\n"
+  python main.py
 }
 
 function run_valgrind() {
   printf -- "\n---------- PROGRAM OUTPUT ----------\n"
-  valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./temp/kmer $FASTA_FILE
+
+  valgrind \
+    --leak-check=full \
+    --show-leak-kinds=all \
+    --track-origins=yes \
+    --verbose \
+    --log-file=valgrind-out.txt \
+    ./temp/f2i $FASTA_FILE
+
   printf -- "\n---------- VALGRIND OUTPUT ----------\n"
   cat valgrind-out.txt
   rm valgrind-out.txt
@@ -66,11 +92,22 @@ make
 abort_if_not_ok
 cd ..
 
-if [ $VALGRIND = 1 ];
-then
+# Run valgrind
+if [ $VALGRIND = 1 ]; then
+  if [ $PYTHON_MODULE = 1 ]; then
+    printf "\33[91mWARNING\33[0m: Cannot run valgrind on python module.\n"
+    exit 0
+  fi
   run_valgrind
   exit 0
 fi
 
-# Run program
-run_output
+# Run program or py script 
+if [ $COMPILE = 0 ]; then
+  if [ $PYTHON_MODULE = 1 ]; then
+    run_python
+  else
+    run_output
+  fi
+  exit 0
+fi
