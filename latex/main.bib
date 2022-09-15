@@ -1,0 +1,121 @@
+@article {KAGE,
+	author = {Grytten, Ivar and Rand, Knut Dagestad and Sandve, Geir Kjetil},
+	title = {KAGE: Fast alignment-free graph-based genotyping of SNPs and short indels},
+	elocation-id = {2021.12.03.471074},
+	year = {2021},
+	doi = {10.1101/2021.12.03.471074},
+	publisher = {Cold Spring Harbor Laboratory},
+	abstract = {Genotyping is a core application of high-throughput sequencing. We present KAGE, a genotyper for SNPs and short indels that is inspired by recent developments within graph-based genome representations and alignment-free methods. KAGE uses a pan-genome representation of the population to efficiently and accurately predict genotypes. Two novel ideas improve both the speed and accuracy: a Bayesian model incorporates genotypes from thousands of individuals to improve prediction accuracy, and a computationally efficient method leverages correlation between variants. We show that the accuracy of KAGE is at par with the best existing alignment-free genotypers, while being an order of magnitude faster.Competing Interest StatementThe authors have declared no competing interest.},
+	URL = {https://www.biorxiv.org/content/early/2021/12/20/2021.12.03.471074},
+	eprint = {https://www.biorxiv.org/content/early/2021/12/20/2021.12.03.471074.full.pdf},
+	journal = {bioRxiv}
+}
+
+@article{MALVA,
+  title = {MALVA: Genotyping by Mapping-free ALlele Detection of Known VAriants},
+  journal = {iScience},
+  volume = {18},
+  pages = {20-27},
+  year = {2019},
+  note = {RECOMB-Seq 2019},
+  issn = {2589-0042},
+  doi = {https://doi.org/10.1016/j.isci.2019.07.011},
+  url = {https://www.sciencedirect.com/science/article/pii/S2589004219302366},
+  author = {Luca Denti and Marco Previtali and Giulia Bernardini and Alexander Schönhuth and Paola Bonizzoni},
+  keywords = {Biological Sciences, Genetics, Genomics, Bioinformatics},
+  abstract = {Summary
+  The amount of genetic variation discovered in human populations is growing rapidly leading to challenging computational tasks, such as variant calling. Standard methods for addressing this problem include read mapping, a computationally expensive procedure; thus, mapping-free tools have been proposed in recent years. These tools focus on isolated, biallelic SNPs, providing limited support for multi-allelic SNPs and short insertions and deletions of nucleotides (indels). Here we introduce MALVA, a mapping-free method to genotype an individual from a sample of reads. MALVA is the first mapping-free tool able to genotype multi-allelic SNPs and indels, even in high-density genomic regions, and to effectively handle a huge number of variants. MALVA requires one order of magnitude less time to genotype a donor than alignment-based pipelines, providing similar accuracy. Remarkably, on indels, MALVA provides even better results than the most widely adopted variant discovery tools.}
+}
+
+@inproceedings{cupy,
+  author       = "Okuta, Ryosuke and Unno, Yuya and Nishino, Daisuke and Hido, Shohei and Loomis, Crissman",
+  title        = "CuPy: A NumPy-Compatible Library for NVIDIA GPU Calculations",
+  booktitle    = "Proceedings of Workshop on Machine Learning Systems (LearningSys) in The Thirty-first Annual Conference on Neural Information Processing Systems (NIPS)",
+  year         = "2017",
+  url          = "http://learningsys.org/nips17/assets/papers/paper_16.pdf"
+}
+
+@Article{numpy,
+ title         = {Array programming with {NumPy}},
+ author        = {Charles R. Harris and K. Jarrod Millman and St{\'{e}}fan J.
+                 van der Walt and Ralf Gommers and Pauli Virtanen and David
+                 Cournapeau and Eric Wieser and Julian Taylor and Sebastian
+                 Berg and Nathaniel J. Smith and Robert Kern and Matti Picus
+                 and Stephan Hoyer and Marten H. van Kerkwijk and Matthew
+                 Brett and Allan Haldane and Jaime Fern{\'{a}}ndez del
+                 R{\'{i}}o and Mark Wiebe and Pearu Peterson and Pierre
+                 G{\'{e}}rard-Marchant and Kevin Sheppard and Tyler Reddy and
+                 Warren Weckesser and Hameer Abbasi and Christoph Gohlke and
+                 Travis E. Oliphant},
+ year          = {2020},
+ month         = sep,
+ journal       = {Nature},
+ volume        = {585},
+ number        = {7825},
+ pages         = {357--362},
+ doi           = {10.1038/s41586-020-2649-2},
+ publisher     = {Springer Science and Business Media {LLC}},
+ url           = {https://doi.org/10.1038/s41586-020-2649-2}
+}
+
+@article{1000GenomesProject,
+  title={A global reference for human genetic variation},
+  author={1000 Genomes Project Consortium and others},
+  journal={Nature},
+  volume={526},
+  number={7571},
+  pages={68},
+  year={2015},
+  publisher={NIH Public Access}
+}
+
+@misc{npstructures,
+  author = {Knut Dagestad Rand, and Ivar Grytten},
+  title = {npstructures},
+  year = {2022},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/knutdrand/npstructures/}},
+  commit = {335b282848b95b5a4a7d80fbff951aad4205fe98}
+}
+
+@misc{bionumpy,
+  author = {Knut Dagestad Rand, and Ivar Grytten},
+  title = {bionumpy},
+  year = {2022},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/knutdrand/bionumpy/}},
+  commit = {9ee7376500cd262bc46519bf76ea0ef0b86aa9c7}
+}
+
+@article{bwa,
+    author = {Li, Heng and Durbin, Richard},
+    title = "{Fast and accurate short read alignment with Burrows–Wheeler transform}",
+    journal = {Bioinformatics},
+    volume = {25},
+    number = {14},
+    pages = {1754-1760},
+    year = {2009},
+    month = {05},
+    abstract = "{Motivation: The enormous amount of short reads generated by the new DNA sequencing technologies call for the development of fast and accurate read alignment programs. A first generation of hash table-based methods has been developed, including MAQ, which is accurate, feature rich and fast enough to align short reads from a single individual. However, MAQ does not support gapped alignment for single-end reads, which makes it unsuitable for alignment of longer reads where indels may occur frequently. The speed of MAQ is also a concern when the alignment is scaled up to the resequencing of hundreds of individuals.Results: We implemented Burrows-Wheeler Alignment tool (BWA), a new read alignment package that is based on backward search with Burrows–Wheeler Transform (BWT), to efficiently align short sequencing reads against a large reference sequence such as the human genome, allowing mismatches and gaps. BWA supports both base space reads, e.g. from Illumina sequencing machines, and color space reads from AB SOLiD machines. Evaluations on both simulated and real data suggest that BWA is ∼10–20× faster than MAQ, while achieving similar accuracy. In addition, BWA outputs alignment in the new standard SAM (Sequence Alignment/Map) format. Variant calling and other downstream analyses after the alignment can be achieved with the open source SAMtools software package.Availability:http://maq.sourceforge.netContact:rd@sanger.ac.uk}",
+    issn = {1367-4803},
+    doi = {10.1093/bioinformatics/btp324},
+    url = {https://doi.org/10.1093/bioinformatics/btp324},
+    eprint = {https://academic.oup.com/bioinformatics/article-pdf/25/14/1754/605544/btp324.pdf},
+}
+
+@article{human-ref-genome,
+author = {Sergey Nurk  and Sergey Koren  and Arang Rhie  and Mikko Rautiainen  and Andrey V. Bzikadze  and Alla Mikheenko  and Mitchell R. Vollger  and Nicolas Altemose  and Lev Uralsky  and Ariel Gershman  and Sergey Aganezov  and Savannah J. Hoyt  and Mark Diekhans  and Glennis A. Logsdon  and Michael Alonge  and Stylianos E. Antonarakis  and Matthew Borchers  and Gerard G. Bouffard  and Shelise Y. Brooks  and Gina V. Caldas  and Nae-Chyun Chen  and Haoyu Cheng  and Chen-Shan Chin  and William Chow  and Leonardo G. de Lima  and Philip C. Dishuck  and Richard Durbin  and Tatiana Dvorkina  and Ian T. Fiddes  and Giulio Formenti  and Robert S. Fulton  and Arkarachai Fungtammasan  and Erik Garrison  and Patrick G. S. Grady  and Tina A. Graves-Lindsay  and Ira M. Hall  and Nancy F. Hansen  and Gabrielle A. Hartley  and Marina Haukness  and Kerstin Howe  and Michael W. Hunkapiller  and Chirag Jain  and Miten Jain  and Erich D. Jarvis  and Peter Kerpedjiev  and Melanie Kirsche  and Mikhail Kolmogorov  and Jonas Korlach  and Milinn Kremitzki  and Heng Li  and Valerie V. Maduro  and Tobias Marschall  and Ann M. McCartney  and Jennifer McDaniel  and Danny E. Miller  and James C. Mullikin  and Eugene W. Myers  and Nathan D. Olson  and Benedict Paten  and Paul Peluso  and Pavel A. Pevzner  and David Porubsky  and Tamara Potapova  and Evgeny I. Rogaev  and Jeffrey A. Rosenfeld  and Steven L. Salzberg  and Valerie A. Schneider  and Fritz J. Sedlazeck  and Kishwar Shafin  and Colin J. Shew  and Alaina Shumate  and Ying Sims  and Arian F. A. Smit  and Daniela C. Soto  and Ivan Sović  and Jessica M. Storer  and Aaron Streets  and Beth A. Sullivan  and Françoise Thibaud-Nissen  and James Torrance  and Justin Wagner  and Brian P. Walenz  and Aaron Wenger  and Jonathan M. D. Wood  and Chunlin Xiao  and Stephanie M. Yan  and Alice C. Young  and Samantha Zarate  and Urvashi Surti  and Rajiv C. McCoy  and Megan Y. Dennis  and Ivan A. Alexandrov  and Jennifer L. Gerton  and Rachel J. O’Neill  and Winston Timp  and Justin M. Zook  and Michael C. Schatz  and Evan E. Eichler  and Karen H. Miga  and Adam M. Phillippy },
+title = {The complete sequence of a human genome},
+journal = {Science},
+volume = {376},
+number = {6588},
+pages = {44-53},
+year = {2022},
+doi = {10.1126/science.abj6987},
+URL = {https://www.science.org/doi/abs/10.1126/science.abj6987},
+eprint = {https://www.science.org/doi/pdf/10.1126/science.abj6987},
+abstract = {Since its initial release in 2000, the human reference genome has covered only the euchromatic fraction of the genome, leaving important heterochromatic regions unfinished. Addressing the remaining 8\% of the genome, the Telomere-to-Telomere (T2T) Consortium presents a complete 3.055 billion–base pair sequence of a human genome, T2T-CHM13, that includes gapless assemblies for all chromosomes except Y, corrects errors in the prior references, and introduces nearly 200 million base pairs of sequence containing 1956 gene predictions, 99 of which are predicted to be protein coding. The completed regions include all centromeric satellite arrays, recent segmental duplications, and the short arms of all five acrocentric chromosomes, unlocking these complex regions of the genome to variational and functional studies.}
+}
+

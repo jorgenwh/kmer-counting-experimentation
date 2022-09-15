@@ -1,16 +1,17 @@
 #!/bin/bash
 
-FASTA_FILE="data/testreads20m.fa"
-CHUNK_SIZE=5000000
-
+# Command line arguments provided when running the cxx application or python script
 CXX_CMD_ARGS=""
 PY_CMD_ARGS=""
 
+# Script flags
 RELEASE=0
 VALGRIND=0
 PYTHON_MODULE=0
 COMPILE=0
 
+# How many cores used to compile (for faster compile times). This will automatically be set to
+# the number of cores on the system
 NUM_CORES=1
 
 # Parse arguments and set relevant flags

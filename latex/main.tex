@@ -1,0 +1,65 @@
+\documentclass[12pt,letterpaper]{article}
+
+\edef\origparind{\the\parindent}
+
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage{blindtext}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[font=footnotesize]{caption}
+\usepackage{relsize}
+\usepackage{environ}
+\usepackage[skip=0.5cm]{parskip}
+\usepackage[sorting=none]{biblatex}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{paralist}
+\usepackage{amssymb}
+
+\usetikzlibrary{positioning}
+\pgfplotsset{compat=1.16}
+
+\parindent=\origparind\relax
+
+% STUFF
+\DeclareCaptionType{equ}[][]
+
+\setstretch{1.4}
+
+\makeatletter
+\def\maketag@@@#1{\hbox{\m@th\normalfont\normalsize#1}}
+\makeatother
+
+\NewEnviron{EQUATIONS}{%
+  \scalebox{1.25}{$\BODY$}
+}
+
+\addbibresource{main.bib}
+% STUFF END
+
+\title{\textbf{master's project notes}}
+\date{}
+\author{}
+
+\begin{document}
+
+% Title
+\maketitle
+\newpage 
+
+% Table of contents
+\tableofcontents
+\newpage
+
+% Introduction
+\input{sections/eval_of_np_vs_cp_in_nps_and_bnp}
+
+% \newpage
+% \printbibliography
+
+\end{document}
