@@ -22,6 +22,7 @@ endif()
 
 # Source files used for the C++ program
 set(SOURCES ${SOURCES}
+  src/fastaparser.cpp  
   src/dnabitset.cpp  
 )
 

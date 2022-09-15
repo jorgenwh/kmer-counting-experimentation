@@ -1,6 +1,7 @@
 #!/bin/bash
 
 FASTA_FILE="data/testreads20m.fa"
+SMALL_FASTA_FILE="data/testreads3.fa"
 CHUNK_SIZE=5000000
 
 RELEASE=0
@@ -66,7 +67,7 @@ function run_output() {
 
 function run_python() {
   printf -- "\n---------- PROGRAM OUTPUT ----------\n"
-  python main.py
+  python main.py $SMALL_FASTA_FILE
 }
 
 function run_valgrind() {

@@ -2,6 +2,8 @@
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 
+#include "cuhashtable.h"
+
 namespace py = pybind11;
 
 PYBIND11_MODULE(f2i_C, m) {

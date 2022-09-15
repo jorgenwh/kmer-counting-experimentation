@@ -17,8 +17,8 @@ extern uint8_t shifts[4];
 enum {
   BASE_A = 0x0, // Binary 00
   BASE_C = 0x1, // Binary 01
-  BASE_G = 0x2, // Binary 10
-  BASE_T = 0x3, // Binary 11
+  BASE_T = 0x2, // Binary 10
+  BASE_G = 0x3, // Binary 11
 };
 
 class DNABitset {
@@ -30,6 +30,7 @@ public:
   char *to_bitstring() const;
   size_t bytes() const { return m_bytes; }
   size_t length() const { return m_length; }
+  uint8_t *data() const { return m_bitset; }
 private:
   uint8_t *m_bitset;
   size_t m_length;
