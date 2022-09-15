@@ -32,10 +32,4 @@ def time_hash(verbose=False):
     return t2 - t1
 
 if __name__ == "__main__":
-    #time_hash(verbose=False)
-
-    unique_kmers = np.load("uniquekmers.npy")[:50000000]
-
-    counter = nps.Counter(keys=unique_kmers)
-    lengths = counter._keys.shape.lengths
-    print(np.amax(lengths))
+    pass

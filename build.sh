@@ -1,8 +1,10 @@
 #!/bin/bash
 
 FASTA_FILE="data/testreads20m.fa"
-SMALL_FASTA_FILE="data/testreads3.fa"
 CHUNK_SIZE=5000000
+
+CXX_CMD_ARGS=""
+PY_CMD_ARGS=""
 
 RELEASE=0
 VALGRIND=0
@@ -62,12 +64,12 @@ function run_cmake() {
 
 function run_output() {
   printf -- "\n---------- PROGRAM OUTPUT ----------\n"
-  ./temp/f2i $FASTA_FILE
+  ./temp/f2i $CXX_CMD_ARGS
 }
 
 function run_python() {
   printf -- "\n---------- PROGRAM OUTPUT ----------\n"
-  python main.py $SMALL_FASTA_FILE
+  python main.py $PY_CMD_ARGS
 }
 
 function run_valgrind() {
@@ -79,7 +81,7 @@ function run_valgrind() {
     --track-origins=yes \
     --verbose \
     --log-file=valgrind-out.txt \
-    ./temp/f2i $FASTA_FILE
+    ./temp/f2i
 
   printf -- "\n---------- VALGRIND OUTPUT ----------\n"
   cat valgrind-out.txt
