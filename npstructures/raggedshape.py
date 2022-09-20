@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import numpy as np
 
 class ViewBase:
-    _dtype = np.int64
+    _dtype = np.int32
 
     @classmethod
     def set_dtype(cls, dtype):

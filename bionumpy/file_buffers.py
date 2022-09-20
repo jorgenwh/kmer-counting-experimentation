@@ -176,6 +176,7 @@ class OneLineBuffer(FileBuffer):
         lengths = np.diff(starts)
         self.lines = Sequences(self._data, RaggedShape(lengths))
         sequences = self.lines[1 :: self.n_lines_per_entry, :-1]
+        #sequences = None
         headers = self.lines[:: self.n_lines_per_entry, 1:-1]
         return SequenceEntry(headers, sequences)
 
