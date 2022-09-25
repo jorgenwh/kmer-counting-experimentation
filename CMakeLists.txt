@@ -14,7 +14,7 @@ endif()
 # Set compiler flags based on whether to perform debug or release build
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
   set(CMAKE_CXX_FLAGS "-g -Wall")
-  set(CMAKE_CUDA_FLAGS "-arch=sm_75 -g -Wall")
+  set(CMAKE_CUDA_FLAGS "-arch=sm_75 -g")
 else()
   set(CMAKE_CXX_FLAGS "-O3")
   set(CMAKE_CUDA_FLAGS "-arch=sm_75 -O3")
@@ -27,7 +27,8 @@ set(SOURCES ${SOURCES}
 
 # Source files used for the pybind11 module
 set(PY_MODULE_SOURCES ${PY_MODULE_SOURCES}
-
+  src/hashtable.cu
+  src/kernels.cu
 )
 
 set(PY_MODULE_BINDINGS
@@ -36,6 +37,7 @@ set(PY_MODULE_BINDINGS
 
 if(PY_MODULE MATCHES "True")
   # Generate build for the pybind11 module
+  message(STATUS "Compiling py module: '${PY_MODULE_NAME}'")
   add_subdirectory(extern/pybind11)
   add_library(${PY_MODULE_NAME} MODULE ${PY_MODULE_SOURCES} ${PY_MODULE_BINDINGS})
   target_link_libraries(${PY_MODULE_NAME} PRIVATE pybind11::module)
@@ -45,5 +47,6 @@ if(PY_MODULE MATCHES "True")
   )
 else()
   # Generate build for the CXX application
+  message(STATUS "Compiling cxx application: '${PROJECT_NAME}'")
   add_executable(${PROJECT_NAME} src/main.cpp ${SOURCES})
 endif()
