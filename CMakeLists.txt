@@ -35,6 +35,7 @@ set(PY_MODULE_BINDINGS
   src/module.cpp
 )
 
+
 if(PY_MODULE MATCHES "True")
   # Generate build for the pybind11 module
   message(STATUS "Compiling py module: '${PY_MODULE_NAME}'")
@@ -45,8 +46,10 @@ if(PY_MODULE MATCHES "True")
     PREFIX "${PYTHON_MODULE_PREFIX}"
     SUFFIX "${PYTHON_MODULE_EXTENSION}"
   )
+  set_target_properties(${PY_MODULE_NAME} PROPERTIES CUDA_ARCHITECTURES "75")
 else()
   # Generate build for the CXX application
   message(STATUS "Compiling cxx application: '${PROJECT_NAME}'")
   add_executable(${PROJECT_NAME} src/main.cpp ${SOURCES})
+  set_target_properties(${PROJECT_NAME} PROPERTIES CUDA_ARCHITECTURES "75")
 endif()

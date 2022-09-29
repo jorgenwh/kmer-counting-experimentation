@@ -8,7 +8,8 @@
 
 #define _DEBUG
 
-#define HASH_TABLE_CAP 250000000
+#define HASH_TABLE_CAP 53070300
+//#define HASH_TABLE_CAP 250000000
 
 static const uint64_t kEmpty = 0xffffffffffffffff;
 static const uint64_t vInvalid = 0xffffffffffffffff;

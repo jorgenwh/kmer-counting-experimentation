@@ -68,11 +68,6 @@ function run_output() {
   ./temp/f2i $CXX_CMD_ARGS
 }
 
-function run_python() {
-  printf -- "\n---------- PROGRAM OUTPUT ----------\n"
-  python main.py $PY_CMD_ARGS
-}
-
 function run_valgrind() {
   printf -- "\n---------- PROGRAM OUTPUT ----------\n"
 
@@ -113,12 +108,7 @@ if [ $VALGRIND = 1 ]; then
   exit 0
 fi
 
-# Run program or py script 
-if [ $COMPILE = 0 ]; then
-  if [ $PYTHON_MODULE = 1 ]; then
-    run_python
-  else
-    run_output
-  fi
-  exit 0
+# Run program
+if [ $COMPILE = 0 ] && [ $PYTHON_MODULE = 0 ]; then
+  run_output
 fi
