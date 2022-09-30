@@ -1,5 +1,5 @@
-#ifndef CU_H_
-#define CU_H_
+#ifndef COMMON_H_
+#define COMMON_H_
 
 #include <stdio.h>
 
@@ -29,4 +29,4 @@ struct KeyValue {
   uint64_t value;
 };
 
-#endif // CU_H_
+#endif // COMMON_H_

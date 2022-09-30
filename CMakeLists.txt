@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
-project(f2i LANGUAGES CXX CUDA)
+project(cuht LANGUAGES CXX CUDA)
 
-set(PY_MODULE_NAME "f2i_C")
+set(PY_MODULE_NAME "cuht_module")
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CUDA_STANDARD 14)

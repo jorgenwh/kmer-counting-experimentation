@@ -65,7 +65,7 @@ function run_cmake() {
 
 function run_output() {
   printf -- "\n---------- PROGRAM OUTPUT ----------\n"
-  ./temp/f2i $CXX_CMD_ARGS
+  ./temp/cuht $CXX_CMD_ARGS
 }
 
 function run_valgrind() {
@@ -77,7 +77,7 @@ function run_valgrind() {
     --track-origins=yes \
     --verbose \
     --log-file=valgrind-out.txt \
-    ./temp/f2i
+    ./temp/cuht
 
   printf -- "\n---------- VALGRIND OUTPUT ----------\n"
   cat valgrind-out.txt

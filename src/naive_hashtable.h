@@ -15,11 +15,11 @@
 class NaiveHashTable {
 public:
   NaiveHashTable() = default;
-  NaiveHashTable(const uint64_t *keys, const uint32_t size);
+  NaiveHashTable(const uint64_t *keys, const uint32_t size, const uint32_t capacity);
   ~NaiveHashTable() { cudaFree(table_m); }
 
   uint32_t size() const { return size_m; }
-  uint32_t capacity() const { return HASH_TABLE_CAP; }
+  uint32_t capacity() const { return capacity_m; }
 
   void count(const uint64_t *keys, const uint32_t size);
   void countcu(const uint64_t *keys, const uint32_t size);
@@ -31,9 +31,10 @@ public:
 
 private:
   uint32_t size_m;
+  uint32_t capacity_m;
   KeyValue *table_m;
 
-  void initialize(const uint64_t *keys, const uint32_t size);
+  void initialize(const uint64_t *keys, const uint32_t size, const uint32_t capacity);
 };
 
 #endif // NAIVE_HASHTABLE_H_

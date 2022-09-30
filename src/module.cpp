@@ -10,14 +10,14 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(f2i_C, m) {
-  m.doc() = "Documentation for the f2i_C module";
+PYBIND11_MODULE(cuht_module, m) {
+  m.doc() = "Documentation for the cuht (cuda hashtable) module";
 
   py::class_<NaiveHashTable>(m, "NaiveHashTable")
-    .def(py::init([](py::array_t<uint64_t> &keys) { 
+    .def(py::init([](py::array_t<uint64_t> &keys, const uint32_t capacity) { 
       const uint64_t *data = (uint64_t *)keys.data();
       const uint32_t size = keys.size();
-      return new NaiveHashTable(data, size);
+      return new NaiveHashTable(data, size, capacity);
     }))
     .def("size", &NaiveHashTable::size)
     .def("capacity", &NaiveHashTable::capacity)

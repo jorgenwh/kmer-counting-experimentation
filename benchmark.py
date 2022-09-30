@@ -10,10 +10,13 @@ import cupy as cp
 import npstructures as nps
 import bionumpy as bnp
 
-from temp.f2i_C import NaiveHashTable
+from temp.cuht_module import NaiveHashTable
 
 
-class CuCounter(NaiveHashTable):
+class CuhtCounter(NaiveHashTable):
+    def __init__(self, keys, capacity):
+        super().__init__(keys, capacity)
+
     def count(self, kmers):
         if isinstance(kmers, cp.ndarray):
             super().countcu(kmers.data.ptr, kmers.size)
@@ -24,25 +27,27 @@ class CuCounter(NaiveHashTable):
 def get_arguments():
     parser = argparse.ArgumentParser(description="Benchmarking script for reading a fasta file and achieving a frequency count for kmers")
     parser.add_argument("-backend", choices=["numpy", "cupy"], required=True)
-    parser.add_argument("-counter", choices=["nps", "f2i_C"], required=True)
+    parser.add_argument("-counter", choices=["nps", "cuht"], required=True)
     parser.add_argument("-counter_size", type=int, required=True)
+    parser.add_argument("-cuht_capacity", type=int, required=True)
     parser.add_argument("-chunk_size", type=int, required=True)
 
     return parser.parse_args()
 
 
-arguments = get_arguments()
+args = get_arguments()
 
 fasta_filename = "data/fa/testreads20m.fa"
 keys_filename = "data/npy/uniquekmers.npy"
 
 
-def pipeline(fasta_filename, keys_filename, xp, counter_type, counter_size, chunk_size):
+def pipeline(fasta_filename, keys_filename, xp, counter_type, counter_size, cuht_capacity, chunk_size):
     shsize = shutil.get_terminal_size().columns
     print(">> INFO")
     print(f"BACKEND_ARRAY_MODULE   : {xp.__name__}")
-    print(f"COUNTER_TYPE           : {'Counter' if counter_type == nps.Counter else 'CuCounter'}")
+    print(f"COUNTER_TYPE           : {'Counter' if counter_type == nps.Counter else 'CuhtCounter'}")
     print(f"COUNTER_SIZE           : {counter_size}")
+    print(f"CUHT_CAPACITY          : {cuht_capacity}")
     print(f"CHUNK_SIZE             : {chunk_size}")
 
     time_data = {
@@ -55,7 +60,10 @@ def pipeline(fasta_filename, keys_filename, xp, counter_type, counter_size, chun
     #keys = xp.asanyarray(keys)
 
     t = time.time()
-    counter = counter_type(keys)
+    if counter_type == CuhtCounter:
+        counter = counter_type(keys, cuht_capacity)
+    else:
+        counter = counter_type(keys)
     t = time.time()
     counter_init_elapsed = time.time() - t
 
@@ -76,8 +84,8 @@ def pipeline(fasta_filename, keys_filename, xp, counter_type, counter_size, chun
         chunk_counting_t += time.time() - t
 
         num_chunks+=1
-        #print(f"PROCESSING CHUNK: {num_chunks}", end="\r")
-    #print(f"PROCESSING CHUNK: {num_chunks}")
+        print(f"PROCESSING CHUNK: {num_chunks}", end="\r")
+    print(f"PROCESSING CHUNK: {num_chunks}")
 
     total_t = time.time() - t_
     chunk_creation_t = total_t - (chunk_hashing_t + chunk_counting_t)
@@ -97,18 +105,19 @@ def pipeline(fasta_filename, keys_filename, xp, counter_type, counter_size, chun
 
 
 if __name__ == "__main__":
-    if arguments.backend == "cupy":
+    if args.backend == "cupy":
         nps.set_backend(cp)
         bnp.set_backend(cp)
 
-    array_module = np if arguments.backend == "numpy" else cp
-    counter_type = nps.Counter if arguments.counter == "nps" else CuCounter
+    array_module = np if args.backend == "numpy" else cp
+    counter_type = nps.Counter if args.counter == "nps" else CuhtCounter
     
     time_data = pipeline(
             fasta_filename=fasta_filename, 
             keys_filename=keys_filename, 
             xp=array_module, 
             counter_type=counter_type, 
-            counter_size=arguments.counter_size, 
-            chunk_size=arguments.chunk_size)
+            counter_size=args.counter_size, 
+            cuht_capacity=args.cuht_capacity, 
+            chunk_size=args.chunk_size)
 
