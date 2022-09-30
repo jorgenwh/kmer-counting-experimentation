@@ -4,10 +4,10 @@
 #include <cuda_runtime.h>
 
 #include "common.h"
-#include "kernels.h"
+#include "cg_kernels.h"
 
 __global__ void init_hashtable_kernel(
-    KeyValue *table, const uint64_t *keys, const uint32_t size, const uint32_t capacity) {
+    Table table, const uint64_t *keys, const uint32_t size, const uint32_t capacity) {
   int thread_id = blockIdx.x * blockDim.x + threadIdx.x;
 
   if (thread_id < size) {
@@ -15,11 +15,11 @@ __global__ void init_hashtable_kernel(
     uint64_t hash = key % capacity;
 
     while (true) {
-      unsigned long long int *old_ptr = reinterpret_cast<unsigned long long int *>(&table[hash].key);
+      unsigned long long int *old_ptr = reinterpret_cast<unsigned long long int *>(&table.keys[hash]);
       uint64_t old = atomicCAS(old_ptr, kEmpty, key);
 
       if (old == kEmpty || old == key) {
-        table[hash].value = 0;
+        table.values[hash] = 0;
         return;
       }
       hash = (hash + 1) % capacity;
@@ -28,7 +28,7 @@ __global__ void init_hashtable_kernel(
 }
 
 void init_hashtable(
-    KeyValue *table, const uint64_t *keys, const uint32_t size, const uint32_t capacity) {
+    Table table, const uint64_t *keys, const uint32_t size, const uint32_t capacity) {
   int min_grid_size;
   int thread_block_size;
   cuda_errchk(cudaOccupancyMaxPotentialBlockSize(
@@ -40,8 +40,8 @@ void init_hashtable(
   cuda_errchk(cudaDeviceSynchronize());
 }
 
-__global__ void lookup_hashtable_kernel(KeyValue *table, 
-    const uint64_t *keys, uint64_t *counts, const uint32_t size, const uint32_t capacity) {
+__global__ void lookup_hashtable_kernel(Table table, 
+    const uint64_t *keys, uint32_t *counts, const uint32_t size, const uint32_t capacity) {
   int thread_id = blockIdx.x * blockDim.x + threadIdx.x;
 
   if (thread_id < size) {
@@ -49,9 +49,9 @@ __global__ void lookup_hashtable_kernel(KeyValue *table,
     uint64_t hash = key % capacity;
 
     while (true) {
-      KeyValue cur = table[hash];
-      if (cur.key == key || cur.key == kEmpty) {
-        counts[thread_id] = (cur.key == key) ? cur.value : 0;
+      uint64_t cur_key = table.keys[hash];
+      if (cur_key == key || cur_key == kEmpty) {
+        counts[thread_id] = (cur_key == key) ? table.values[hash] : 0;
         return;
       }
       hash = (hash + 1) % capacity;
@@ -59,8 +59,8 @@ __global__ void lookup_hashtable_kernel(KeyValue *table,
   }
 }
 
-void lookup_hashtable(KeyValue *table, 
-    const uint64_t *keys, uint64_t *counts, const uint32_t size, const uint32_t capacity) {
+void lookup_hashtable(Table table, 
+    const uint64_t *keys, uint32_t *counts, const uint32_t size, const uint32_t capacity) {
   int min_grid_size;
   int thread_block_size;
   cuda_errchk(cudaOccupancyMaxPotentialBlockSize(
@@ -73,7 +73,7 @@ void lookup_hashtable(KeyValue *table,
 }
 
 __global__ void count_hashtable_kernel(
-    KeyValue *table, const uint64_t *keys, const uint32_t size, const uint32_t capacity) {
+    Table table, const uint64_t *keys, const uint32_t size, const uint32_t capacity) {
   int thread_id = blockIdx.x * blockDim.x + threadIdx.x;
 
   if (thread_id < size) {
@@ -81,9 +81,10 @@ __global__ void count_hashtable_kernel(
     uint64_t hash = key % capacity;
 
     while (true) {
-      if (table[hash].key == kEmpty) { return; }
-      if (table[hash].key == key) {
-        atomicAdd((unsigned long long int *)&(table[hash].value), 1);
+      uint64_t cur_key = table.keys[hash];
+      if (cur_key == kEmpty) { return; }
+      if (cur_key == key) {
+        atomicAdd((unsigned int *)&(table.values[hash]), 1);
         return;
       }
 
@@ -93,7 +94,7 @@ __global__ void count_hashtable_kernel(
 }
 
 void count_hashtable(
-    KeyValue *table, const uint64_t *keys, const uint32_t size, const uint32_t capacity) {
+    Table table, const uint64_t *keys, const uint32_t size, const uint32_t capacity) {
   int min_grid_size;
   int thread_block_size;
   cuda_errchk(cudaOccupancyMaxPotentialBlockSize(

@@ -1,5 +1,5 @@
-#ifndef NAIVE_HASHTABLE_H_
-#define NAIVE_HASHTABLE_H_
+#ifndef CG_HASHTABLE_H_
+#define CG_HASHTABLE_H_
 
 #include <iostream>
 #include <sstream>
@@ -10,13 +10,13 @@
 #include <cuda_runtime.h>
 
 #include "common.h"
-#include "naive_kernels.h"
+#include "cg_kernels.h"
 
-class NaiveHashTable {
+class CGHashTable {
 public:
-  NaiveHashTable() = default;
-  NaiveHashTable(const uint64_t *keys, const bool cuda_keys, const uint32_t size, const uint32_t capacity);
-  ~NaiveHashTable() { 
+  CGHashTable() = default;
+  CGHashTable(const uint64_t *keys, const bool cuda_keys, const uint32_t size, const uint32_t capacity);
+  ~CGHashTable() { 
     cudaFree(table_m.keys); 
     cudaFree(table_m.values); 
   }
@@ -39,4 +39,4 @@ private:
   void initialize(const uint64_t *keys, const bool cuda_keys, const uint32_t size, const uint32_t capacity);
 };
 
-#endif // NAIVE_HASHTABLE_H_
+#endif // CG_HASHTABLE_H_

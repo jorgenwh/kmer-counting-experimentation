@@ -17,7 +17,13 @@ PYBIND11_MODULE(cuht_module, m) {
     .def(py::init([](py::array_t<uint64_t> &keys, const uint32_t capacity) { 
       const uint64_t *data = (uint64_t *)keys.data();
       const uint32_t size = keys.size();
-      return new NaiveHashTable(data, size, capacity);
+      const bool cuda_keys = false;
+      return new NaiveHashTable(data, cuda_keys, size, capacity);
+    }))
+    .def(py::init([](long keys_ptr, const uint32_t size, const uint32_t capacity) { 
+      const uint64_t *data = reinterpret_cast<uint64_t*>(keys_ptr);
+      const bool cuda_keys = true;
+      return new NaiveHashTable(data, cuda_keys, size, capacity);
     }))
     .def("size", &NaiveHashTable::size)
     .def("capacity", &NaiveHashTable::capacity)
@@ -37,8 +43,8 @@ PYBIND11_MODULE(cuht_module, m) {
       const uint64_t *keys_data = (uint64_t *)keys.data();
       const uint32_t size = keys.size();
 
-      auto ret = py::array_t<uint64_t>(buf.size);
-      uint64_t *counts_data = ret.mutable_data();
+      auto ret = py::array_t<uint32_t>(buf.size);
+      uint32_t *counts_data = ret.mutable_data();
 
       self.get(keys_data, counts_data, size);
 
@@ -46,7 +52,7 @@ PYBIND11_MODULE(cuht_module, m) {
     })
     .def("getcu", [](NaiveHashTable &self, long keys_ptr, long counts_ptr, uint32_t size) {
       uint64_t *keys = reinterpret_cast<uint64_t*>(keys_ptr);
-      uint64_t *counts = reinterpret_cast<uint64_t*>(counts_ptr);
+      uint32_t *counts = reinterpret_cast<uint32_t*>(counts_ptr);
       self.getcu(keys, counts, size);
     })
     ;

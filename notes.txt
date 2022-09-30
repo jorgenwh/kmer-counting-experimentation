@@ -1,0 +1,6 @@
+TODO LIST
+
+1. Figure out some way to switch between AOS and SOA hashtables conveniently
+2. Implement probing scheme described in warpcore - several threads used to insert a single key
+3. Implement functionality to load counter from file into CPU then transfer to GPU to get around the GPU initialization step for nps.Counter so that benchmarkings of larger counters can be performed
+

@@ -28,7 +28,9 @@ set(SOURCES ${SOURCES}
 # Source files used for the pybind11 module
 set(PY_MODULE_SOURCES ${PY_MODULE_SOURCES}
   src/naive_hashtable.cu
-  src/kernels.cu
+  src/naive_kernels.cu
+  src/cg_hashtable.cu 
+  src/cg_kernels.cu
 )
 
 set(PY_MODULE_BINDINGS

@@ -7,32 +7,7 @@ import cupy as cp
 import npstructures as nps
 import bionumpy as bnp
 
-from temp.cuht_module import NaiveHashTable
-
-
-class CuhtCounter(NaiveHashTable):
-    def __init__(self, keys, capacity):
-        assert isinstance(keys, (np.ndarray, cp.ndarray))
-        super().__init__(keys, capacity)
-
-    def count(self, kmers):
-        if isinstance(kmers, np.ndarray):
-            super().count(kmers)
-        elif isinstance(kmers, cp.ndarray):
-            super().countcu(kmers.data.ptr, kmers.size)
-        else:
-            print("Error: invalid type provided as kmers")
-
-    def __getitem__(self, keys):
-        if isinstance(keys, np.ndarray):
-            return super().get(keys)
-        elif isinstance(keys, cp.ndarray):
-            counts = cp.zeros_like(keys)
-            super().getcu(keys.data.ptr, counts.data.ptr, keys.size)
-            return counts 
-        else:
-            print("Error: invalid type provided as keys")
-
+from counters import NaiveCounter as NaiveCuhtCounter
 
 def get_arguments():
     parser = argparse.ArgumentParser("Script checking that counts computed by f2i_C.NaiveHashTable and npstructures.Counter are equal.")
@@ -51,7 +26,7 @@ def check(fasta_filename, keys_filename, xp, counter_size, cuht_capacity, chunk_
     keys = np.load(keys_filename)[:counter_size]
 
     nps_counter = nps.Counter(keys=keys)
-    cuht_counter = CuhtCounter(keys=keys, capacity=cuht_capacity)
+    cuht_counter = NaiveCuhtCounter(keys=keys, capacity=cuht_capacity)
 
     c = 0
     for chunk in bnp.open(fasta_filename, chunk_size=chunk_size):
@@ -63,9 +38,15 @@ def check(fasta_filename, keys_filename, xp, counter_size, cuht_capacity, chunk_
         c += 1
         print(f"Counting kmers ... {c}\r", end="")
     print(f"Counting kmers ... {c}")
-    
+
     nps_counts = nps_counter[keys.ravel()]
     cuht_counts = cuht_counter[keys.ravel()]
+
+    print(nps_counts[:10])
+    print(cuht_counts[:10])
+
+    print()
+    print(cuht_counter)
     
     xp.testing.assert_array_equal(nps_counts, cuht_counts)
     print("Assert passed")

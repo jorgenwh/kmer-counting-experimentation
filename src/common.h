@@ -8,11 +8,8 @@
 
 #define _DEBUG
 
-//#define HASH_TABLE_CAP 150000000
-#define HASH_TABLE_CAP 50000000 
-
 static const uint64_t kEmpty = 0xffffffffffffffff;
-static const uint64_t vInvalid = 0xffffffffffffffff;
+static const uint32_t vInvalid = 0xffffffff;
 
 #define cuda_errchk(err) { cuda_errcheck(err, __FILE__, __LINE__); }
 inline void cuda_errcheck(cudaError_t code, const char *file, int line, bool abort=true) {
@@ -24,9 +21,15 @@ inline void cuda_errcheck(cudaError_t code, const char *file, int line, bool abo
 #endif // _DEBUG
 }
 
+// No longer using this
 struct KeyValue {
   uint64_t key;
   uint64_t value;
+};
+
+struct Table {
+  uint64_t *keys;
+  uint32_t *values;
 };
 
 #endif // COMMON_H_

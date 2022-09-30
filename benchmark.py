@@ -10,18 +10,7 @@ import cupy as cp
 import npstructures as nps
 import bionumpy as bnp
 
-from temp.cuht_module import NaiveHashTable
-
-
-class CuhtCounter(NaiveHashTable):
-    def __init__(self, keys, capacity):
-        super().__init__(keys, capacity)
-
-    def count(self, kmers):
-        if isinstance(kmers, cp.ndarray):
-            super().countcu(kmers.data.ptr, kmers.size)
-        else:
-            super().count(kmers)
+from counters import NaiveCounter as NaiveCuhtCounter
 
 
 def get_arguments():
@@ -60,11 +49,10 @@ def pipeline(fasta_filename, keys_filename, xp, counter_type, counter_size, cuht
     #keys = xp.asanyarray(keys)
 
     t = time.time()
-    if counter_type == CuhtCounter:
+    if counter_type == NaiveCuhtCounter:
         counter = counter_type(keys, cuht_capacity)
     else:
         counter = counter_type(keys)
-    t = time.time()
     counter_init_elapsed = time.time() - t
 
     chunk_creation_t = 0
@@ -101,6 +89,8 @@ def pipeline(fasta_filename, keys_filename, xp, counter_type, counter_size, cuht
     time_data["chunk_counting_time"] = chunk_counting_t
     time_data["total_time"] = total_t 
 
+    print(counter)
+
     return time_data
 
 
@@ -110,7 +100,7 @@ if __name__ == "__main__":
         bnp.set_backend(cp)
 
     array_module = np if args.backend == "numpy" else cp
-    counter_type = nps.Counter if args.counter == "nps" else CuhtCounter
+    counter_type = nps.Counter if args.counter == "nps" else NaiveCuhtCounter
     
     time_data = pipeline(
             fasta_filename=fasta_filename, 

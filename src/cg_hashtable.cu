@@ -7,14 +7,14 @@
 #include <cuda_runtime.h>
 
 #include "common.h"
-#include "naive_kernels.h"
-#include "naive_hashtable.h"
+#include "kernels.h"
+#include "cg_hashtable.h"
 
-NaiveHashTable::NaiveHashTable(const uint64_t *keys, const bool cuda_keys, const uint32_t size, const uint32_t capacity) {
+CGHashTable::CGHashTable(const uint64_t *keys, const bool cuda_keys, const uint32_t size, const uint32_t capacity) {
   initialize(keys, cuda_keys, size, capacity);
 }
 
-void NaiveHashTable::initialize(const uint64_t *keys, const bool cuda_keys, const uint32_t size, const uint32_t capacity) {
+void CGHashTable::initialize(const uint64_t *keys, const bool cuda_keys, const uint32_t size, const uint32_t capacity) {
   capacity_m = capacity;
   size_m = size;
 
@@ -40,7 +40,7 @@ void NaiveHashTable::initialize(const uint64_t *keys, const bool cuda_keys, cons
   }
 }
 
-void NaiveHashTable::get(const uint64_t *keys, uint32_t *counts, uint32_t size) const {
+void CGHashTable::get(const uint64_t *keys, uint32_t *counts, uint32_t size) const {
   uint64_t *d_keys;
   cuda_errchk(cudaMalloc(&d_keys, sizeof(uint64_t)*size));
   cuda_errchk(cudaMemcpy(d_keys, keys, sizeof(uint64_t)*size, cudaMemcpyHostToDevice));
@@ -55,11 +55,11 @@ void NaiveHashTable::get(const uint64_t *keys, uint32_t *counts, uint32_t size) 
   cuda_errchk(cudaFree(d_counts));
 }
 
-void NaiveHashTable::getcu(const uint64_t *keys, uint32_t *counts, uint32_t size) const {
+void CGHashTable::getcu(const uint64_t *keys, uint32_t *counts, uint32_t size) const {
   lookup_hashtable(table_m, keys, counts, size, capacity_m); 
 }
 
-void NaiveHashTable::count(const uint64_t *keys, const uint32_t size) {
+void CGHashTable::count(const uint64_t *keys, const uint32_t size) {
   uint64_t *d_keys;
   cuda_errchk(cudaMalloc(&d_keys, sizeof(uint64_t)*size));
   cuda_errchk(cudaMemcpy(d_keys, keys, sizeof(uint64_t)*size, cudaMemcpyHostToDevice));
@@ -68,11 +68,11 @@ void NaiveHashTable::count(const uint64_t *keys, const uint32_t size) {
   cuda_errchk(cudaFree(d_keys));
 }
 
-void NaiveHashTable::countcu(const uint64_t *keys, const uint32_t size) {
+void CGHashTable::countcu(const uint64_t *keys, const uint32_t size) {
   count_hashtable(table_m, keys, size, capacity_m);
 }
 
-std::string NaiveHashTable::to_string() const {
+std::string CGHashTable::to_string() const {
   int print_size = (capacity_m < 40) ? capacity_m : 40;
 
   uint64_t *keys = new uint64_t[capacity_m];
