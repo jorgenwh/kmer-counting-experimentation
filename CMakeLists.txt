@@ -14,10 +14,10 @@ endif()
 # Set compiler flags based on whether to perform debug or release build
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
   set(CMAKE_CXX_FLAGS "-g -Wall")
-  set(CMAKE_CUDA_FLAGS "-arch=sm_75 -g")
+  set(CMAKE_CUDA_FLAGS "-g")
 else()
   set(CMAKE_CXX_FLAGS "-O3")
-  set(CMAKE_CUDA_FLAGS "-arch=sm_75 -O3")
+  set(CMAKE_CUDA_FLAGS "-O3")
 endif()
 
 # Source files used for the C++ program
@@ -27,7 +27,7 @@ set(SOURCES ${SOURCES}
 
 # Source files used for the pybind11 module
 set(PY_MODULE_SOURCES ${PY_MODULE_SOURCES}
-  src/hashtable.cu
+  src/naive_hashtable.cu
   src/kernels.cu
 )
 

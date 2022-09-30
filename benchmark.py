@@ -10,10 +10,10 @@ import cupy as cp
 import npstructures as nps
 import bionumpy as bnp
 
-from temp.f2i_C import CuHashTable
+from temp.f2i_C import NaiveHashTable
 
 
-class CuCounter(CuHashTable):
+class CuCounter(NaiveHashTable):
     def count(self, kmers):
         if isinstance(kmers, cp.ndarray):
             super().countcu(kmers.data.ptr, kmers.size)
@@ -86,7 +86,7 @@ def pipeline(fasta_filename, keys_filename, xp, counter_type, counter_size, chun
     print(f"CHUNK_CREATION_TIME    : {round(chunk_creation_t, 3)} seconds")
     print(f"CHUNK_HASHING_TIME     : {round(chunk_hashing_t, 3)} seconds")
     print(f"CHUNK_COUNTING_TIME    : {round(chunk_counting_t, 3)} seconds")
-    print(f"TOTAL_FA2COUNTS_TIME   : {round(total_t, 3)} seconds\n")
+    print(f"TOTAL_FA2COUNTS_TIME   : {round(total_t, 3)} seconds")
 
     time_data["chunk_creation_time"] = chunk_creation_t
     time_data["chunk_hashing_time"] = chunk_hashing_t
@@ -105,8 +105,8 @@ if __name__ == "__main__":
     counter_type = nps.Counter if arguments.counter == "nps" else CuCounter
     
     time_data = pipeline(
-            fasta_filename="data/fa/testreads20m.fa", 
-            keys_filename="data/npy/uniquekmers.npy", 
+            fasta_filename=fasta_filename, 
+            keys_filename=keys_filename, 
             xp=array_module, 
             counter_type=counter_type, 
             counter_size=arguments.counter_size, 
