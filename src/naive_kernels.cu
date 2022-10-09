@@ -6,6 +6,8 @@
 #include "common.h"
 #include "naive_kernels.h"
 
+namespace naive_kernels {
+
 __global__ void init_hashtable_kernel(
     Table table, const uint64_t *keys, const uint32_t size, const uint32_t capacity) {
   int thread_id = blockIdx.x * blockDim.x + threadIdx.x;
@@ -105,3 +107,5 @@ void count_hashtable(
   count_hashtable_kernel<<<grid_size, thread_block_size>>>(table, keys, size, capacity);
   cuda_errchk(cudaDeviceSynchronize());
 }
+
+} // naive_kernels

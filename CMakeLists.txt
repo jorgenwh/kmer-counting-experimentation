@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(cuht LANGUAGES CXX CUDA)
+project(cuht LANGUAGES CUDA CXX)
 
 set(PY_MODULE_NAME "cuht_module")
 
@@ -14,23 +14,26 @@ endif()
 # Set compiler flags based on whether to perform debug or release build
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
   set(CMAKE_CXX_FLAGS "-g -Wall")
-  set(CMAKE_CUDA_FLAGS "-g")
+  set(CMAKE_CUDA_FLAGS "-gencode=arch=compute_75,code=sm_75 -g")
 else()
   set(CMAKE_CXX_FLAGS "-O3")
-  set(CMAKE_CUDA_FLAGS "-O3")
+  set(CMAKE_CUDA_FLAGS "-gencode=arch=compute_75,code=sm_75 -O3")
 endif()
 
 # Source files used for the C++ program
 set(SOURCES ${SOURCES}
-  src/dnabitset.cpp  
+  src/naive_hashtable.cu
+  src/naive_kernels.cu
+  src/cops_hashtable.cu 
+  src/cops_kernels.cu
 )
 
 # Source files used for the pybind11 module
 set(PY_MODULE_SOURCES ${PY_MODULE_SOURCES}
   src/naive_hashtable.cu
   src/naive_kernels.cu
-  src/cg_hashtable.cu 
-  src/cg_kernels.cu
+  src/cops_hashtable.cu 
+  src/cops_kernels.cu
 )
 
 set(PY_MODULE_BINDINGS

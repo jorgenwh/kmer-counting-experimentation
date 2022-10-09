@@ -89,8 +89,6 @@ def pipeline(fasta_filename, keys_filename, xp, counter_type, counter_size, cuht
     time_data["chunk_counting_time"] = chunk_counting_t
     time_data["total_time"] = total_t 
 
-    print(counter)
-
     return time_data
 
 

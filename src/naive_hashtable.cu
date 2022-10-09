@@ -33,7 +33,7 @@ void NaiveHashTable::initialize(const uint64_t *keys, const bool cuda_keys, cons
   // Synchronize because cudaMemset is asynchronous with respect to host
   cuda_errchk(cudaDeviceSynchronize());
 
-  init_hashtable(table_m, cuda_keys ? keys : d_keys, size, capacity);
+  naive_kernels::init_hashtable(table_m, cuda_keys ? keys : d_keys, size, capacity);
 
   if (!cuda_keys) {
     cuda_errchk(cudaFree(d_keys));
@@ -48,7 +48,7 @@ void NaiveHashTable::get(const uint64_t *keys, uint32_t *counts, uint32_t size) 
   uint32_t *d_counts;
   cuda_errchk(cudaMalloc(&d_counts, sizeof(uint32_t)*size));
 
-  lookup_hashtable(table_m, d_keys, d_counts, size, capacity_m); 
+  naive_kernels::lookup_hashtable(table_m, d_keys, d_counts, size, capacity_m); 
 
   cuda_errchk(cudaMemcpy(counts, d_counts, sizeof(uint32_t)*size, cudaMemcpyDeviceToHost));
   cuda_errchk(cudaFree(d_keys));
@@ -56,7 +56,7 @@ void NaiveHashTable::get(const uint64_t *keys, uint32_t *counts, uint32_t size) 
 }
 
 void NaiveHashTable::getcu(const uint64_t *keys, uint32_t *counts, uint32_t size) const {
-  lookup_hashtable(table_m, keys, counts, size, capacity_m); 
+  naive_kernels::lookup_hashtable(table_m, keys, counts, size, capacity_m); 
 }
 
 void NaiveHashTable::count(const uint64_t *keys, const uint32_t size) {
@@ -64,12 +64,12 @@ void NaiveHashTable::count(const uint64_t *keys, const uint32_t size) {
   cuda_errchk(cudaMalloc(&d_keys, sizeof(uint64_t)*size));
   cuda_errchk(cudaMemcpy(d_keys, keys, sizeof(uint64_t)*size, cudaMemcpyHostToDevice));
 
-  count_hashtable(table_m, d_keys, size, capacity_m);
+  naive_kernels::count_hashtable(table_m, d_keys, size, capacity_m);
   cuda_errchk(cudaFree(d_keys));
 }
 
 void NaiveHashTable::countcu(const uint64_t *keys, const uint32_t size) {
-  count_hashtable(table_m, keys, size, capacity_m);
+  naive_kernels::count_hashtable(table_m, keys, size, capacity_m);
 }
 
 std::string NaiveHashTable::to_string() const {
@@ -107,7 +107,7 @@ std::string NaiveHashTable::to_string() const {
   keys_oss << "]";
   values_oss << "]";
 
-  oss << "Counter(" << keys_oss.str() << ", " << values_oss.str();
+  oss << "NaiveHashTable(" << keys_oss.str() << ", " << values_oss.str();
   oss << ", size=" << size_m << ", capacity=" << capacity_m << ")";
 
   delete[] keys;
