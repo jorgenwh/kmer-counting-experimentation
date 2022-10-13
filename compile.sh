@@ -1,6 +1,7 @@
 #!/bin/bash
 
 DEBUG=0
+CXX=0
 
 # Use all cores available on the system for faster compilation
 NUM_CORES=$(grep -c ^processor /proc/cpuinfo)
@@ -10,6 +11,8 @@ for var in "$@"
 do
   if [ "$var" = "-d" ]; then # Debug build
     DEBUG=1
+  elif [ "$var" = "-cxx"]; then # Build the CXX application
+    CXX=1
   fi
 done
 
@@ -26,8 +29,10 @@ CMAKE_ARGS=""
 
 if [ $DEBUG = 1 ]; then
   CMAKE_ARGS+="-D CMAKE_BUILD_TYPE=Debug"
-else
-  CMAKE_ARGS+="-D CMAKE_BUILD_TYPE=Release"
+fi
+
+if [ $CXX = 1 ]; then
+  CMAKE_ARGS+=" -D PY_MODULE=False"
 fi
 
 cmake .. $CMAKE_ARGS

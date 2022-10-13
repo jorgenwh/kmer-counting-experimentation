@@ -18,7 +18,7 @@ def get_arguments():
     parser.add_argument("-backend", choices=["numpy", "cupy"], required=True)
     parser.add_argument("-counter", choices=["nps", "cuht"], required=True)
     parser.add_argument("-counter_size", type=int, required=True)
-    parser.add_argument("-cuht_capacity", type=int, required=True)
+    parser.add_argument("-cuht_capacity", type=int, default=0)
     parser.add_argument("-chunk_size", type=int, required=True)
 
     return parser.parse_args()
@@ -46,7 +46,7 @@ def pipeline(fasta_filename, keys_filename, xp, counter_type, counter_size, cuht
             "chunk_size": chunk_size}
         
     keys = np.load(keys_filename)[:counter_size]
-    #keys = xp.asanyarray(keys)
+    keys = xp.asanyarray(keys)
 
     t = time.time()
     if counter_type == NaiveCuhtCounter:

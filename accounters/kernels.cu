@@ -4,9 +4,8 @@
 #include <cuda_runtime.h>
 
 #include "common.h"
-#include "naive_kernels.h"
-
-namespace naive_kernels {
+#include "cu_common.h"
+#include "kernels.h"
 
 __global__ void init_hashtable_kernel(
     Table table, const uint64_t *keys, const uint32_t size, const uint32_t capacity) {
@@ -108,4 +107,3 @@ void count_hashtable(
   cuda_errchk(cudaDeviceSynchronize());
 }
 
-} // naive_kernels
