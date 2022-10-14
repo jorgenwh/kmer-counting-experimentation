@@ -58,7 +58,7 @@ class CppCounter(CppHashTable):
 
     def __getitem__(self, keys, threads: int = 0):
         assert isinstance(keys, np.ndarray), "Keys must be of type numpy.ndarray"
-        return super().get(keys)
+        return super().get(keys, threads)
 
 
 class CupyCounter():
