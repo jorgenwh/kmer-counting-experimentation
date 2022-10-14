@@ -1,5 +1,0 @@
-Metadata-Version: 2.1
-Name: accounters
-Version: 0.0.1
-Summary: C++ and CUDA accelerated hash tables for high throughput.
-Author: Jørgen Henriksen
