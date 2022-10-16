@@ -1,4 +1,5 @@
 #include <inttypes.h>
+#include <string>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -6,11 +7,48 @@
 
 #include "cuhashtable.h"
 #include "cpphashtable.h"
+#include "kmers.h"
+#include "revcomp.h"
 
 namespace py = pybind11;
 
 PYBIND11_MODULE(accounters_C, m) {
   m.doc() = "...";
+
+  m.def("get_unique_complements", [](py::array_t<uint64_t> &kmers) {
+    py::buffer_info buf = kmers.request();
+
+    const uint64_t *kmers_data = (uint64_t *)kmers.data();
+    const uint32_t size = kmers.size();
+
+    uint64_t *unique_complements;
+    uint32_t unique_complements_size;
+    find_unique_complements(kmers_data, size, 
+        &unique_complements, &unique_complements_size);
+    
+    auto ret = py::array_t<uint64_t>({unique_complements_size});
+    uint64_t *ret_data = ret.mutable_data();
+    memcpy(ret_data, unique_complements, sizeof(uint64_t)*unique_complements_size);
+    delete[] unique_complements;
+
+    return ret;
+  });
+
+  m.def("kmers_to_strings", [](py::array_t<uint64_t> &kmers) {
+    const uint64_t *data = (uint64_t *)kmers.data();
+    const uint32_t size = kmers.size();
+
+    uint8_t *string_data = new uint8_t[size*8];
+    get_kmer_strings(data, size, string_data);
+
+    auto ret = py::array_t<char>({size, 8});
+    char *ret_data = ret.mutable_data();
+
+    memcpy(ret_data, string_data, size*8);
+    delete[] string_data;
+
+    return ret;
+  });
 
   py::class_<CuHashTable>(m, "CuHashTable")
     .def(py::init([](py::array_t<uint64_t> &keys, const uint32_t capacity) { 
