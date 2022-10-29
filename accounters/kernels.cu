@@ -31,14 +31,14 @@ __global__ void init_hashtable_kernel(
 void init_hashtable(
     Table table, const uint64_t *keys, const uint32_t size, const uint32_t capacity) {
   int min_grid_size;
-  int thread_block_size;
-  cuda_errchk(cudaOccupancyMaxPotentialBlockSize(
+  int thread_block_size = 512;
+  /*cuda_errchk(cudaOccupancyMaxPotentialBlockSize(
       &min_grid_size, &thread_block_size, 
-      init_hashtable_kernel, 0, 0));
+      init_hashtable_kernel, 0, 0));*/
 
   int grid_size = size / thread_block_size + (size % thread_block_size > 0);
   init_hashtable_kernel<<<grid_size, thread_block_size>>>(table, keys, size, capacity);
-  cuda_errchk(cudaDeviceSynchronize());
+  //cuda_errchk(cudaDeviceSynchronize());
 }
 
 __global__ void lookup_hashtable_kernel(Table table, 
@@ -63,14 +63,14 @@ __global__ void lookup_hashtable_kernel(Table table,
 void lookup_hashtable(Table table, 
     const uint64_t *keys, uint32_t *counts, const uint32_t size, const uint32_t capacity) {
   int min_grid_size;
-  int thread_block_size;
-  cuda_errchk(cudaOccupancyMaxPotentialBlockSize(
+  int thread_block_size = 512;
+  /*cuda_errchk(cudaOccupancyMaxPotentialBlockSize(
       &min_grid_size, &thread_block_size, 
-      lookup_hashtable_kernel, 0, 0));
+      lookup_hashtable_kernel, 0, 0));*/
 
   int grid_size = size / thread_block_size + (size % thread_block_size > 0);
   lookup_hashtable_kernel<<<grid_size, thread_block_size>>>(table, keys, counts, size, capacity);
-  cuda_errchk(cudaDeviceSynchronize());
+  //cuda_errchk(cudaDeviceSynchronize());
 }
 
 __global__ void count_hashtable_kernel(
@@ -97,13 +97,13 @@ __global__ void count_hashtable_kernel(
 void count_hashtable(
     Table table, const uint64_t *keys, const uint32_t size, const uint32_t capacity) {
   int min_grid_size;
-  int thread_block_size;
-  cuda_errchk(cudaOccupancyMaxPotentialBlockSize(
+  int thread_block_size = 512;
+  /*cuda_errchk(cudaOccupancyMaxPotentialBlockSize(
       &min_grid_size, &thread_block_size, 
-      count_hashtable_kernel, 0, 0));
+      count_hashtable_kernel, 0, 0));*/
 
   int grid_size = size / thread_block_size + (size % thread_block_size > 0);
   count_hashtable_kernel<<<grid_size, thread_block_size>>>(table, keys, size, capacity);
-  cuda_errchk(cudaDeviceSynchronize());
+  //cuda_errchk(cudaDeviceSynchronize());
 }
 

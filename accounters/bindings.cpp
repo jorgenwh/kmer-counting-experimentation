@@ -1,5 +1,9 @@
 #include <inttypes.h>
 #include <string>
+#include <vector>
+#include <assert.h>
+#include <iostream>
+#include <bitset>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -8,44 +12,35 @@
 #include "cuhashtable.h"
 #include "cpphashtable.h"
 #include "kmers.h"
-#include "revcomp.h"
 
 namespace py = pybind11;
 
 PYBIND11_MODULE(accounters_C, m) {
   m.doc() = "...";
 
-  m.def("get_unique_complements", [](py::array_t<uint64_t> &kmers) {
-    py::buffer_info buf = kmers.request();
+  m.def("ascii_to_kmer_hashes", [](std::string &kmers, uint32_t kmer_size) {
+    uint32_t num_kmers = kmers.size() / kmer_size;
 
-    const uint64_t *kmers_data = (uint64_t *)kmers.data();
-    const uint32_t size = kmers.size();
+    auto shape = std::vector<size_t>({num_kmers});
+    auto ret = py::array_t<uint8_t>(shape);
 
-    uint64_t *unique_complements;
-    uint32_t unique_complements_size;
-    find_unique_complements(kmers_data, size, 
-        &unique_complements, &unique_complements_size);
-    
-    auto ret = py::array_t<uint64_t>({unique_complements_size});
-    uint64_t *ret_data = ret.mutable_data();
-    memcpy(ret_data, unique_complements, sizeof(uint64_t)*unique_complements_size);
-    delete[] unique_complements;
+    uint8_t *ret_data = ret.mutable_data();
+    const char *bases = kmers.c_str();
+
+    encode_kmers(bases, ret_data, kmer_size);
 
     return ret;
   });
 
-  m.def("kmers_to_strings", [](py::array_t<uint64_t> &kmers) {
-    const uint64_t *data = (uint64_t *)kmers.data();
-    const uint32_t size = kmers.size();
+  m.def("kmer_hashes_to_ascii", [](py::array_t<uint64_t> &kmers) {
+    const uint64_t *hashes = kmers.data();
+    const uint64_t size = kmers.size();
 
-    uint8_t *string_data = new uint8_t[size*8];
-    get_kmer_strings(data, size, string_data);
+    auto shape = std::vector<size_t>({size, 32});
+    auto ret = py::array_t<uint8_t>(shape);
+    uint8_t *ret_data = ret.mutable_data();
 
-    auto ret = py::array_t<char>({size, 8});
-    char *ret_data = ret.mutable_data();
-
-    memcpy(ret_data, string_data, size*8);
-    delete[] string_data;
+    hashes_to_ascii(hashes, size, ret_data, size*32);
 
     return ret;
   });

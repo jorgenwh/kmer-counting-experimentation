@@ -16,7 +16,7 @@ set(SOURCES
   "${SOURCE_DIR}/cuhashtable.cu"
   "${SOURCE_DIR}/cpphashtable.cpp"
   "${SOURCE_DIR}/kmers.cpp"
-  "${SOURCE_DIR}/revcomp.cpp"
+  #"${SOURCE_DIR}/revcomp.cpp"
 )
 
 pybind11_add_module(${PROJECT_NAME} ${SOURCES} "${SOURCE_DIR}/bindings.cpp")

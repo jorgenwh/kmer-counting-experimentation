@@ -1,13 +1,23 @@
 import numpy as np
 import cupy as cp
 
-from accounters import get_unique_complements, kmers_to_strings
+from accounters import kmer_hashes_to_ascii 
 
-kmers = np.load("data/npy/uniquekmers.npy")
-print(kmers.shape)
-kmer_strings = kmer_strings(kmers)
-print(kmer_strings.shape)
+kmers = np.load("data/npy/uniquekmers.npy")[0]
+print(f"kmers.shape={kmers.shape}, kmers.dtype={kmers.dtype}")
 
-#print(keys.shape)
-#unique_complements = get_unique_complements(keys)
-#print(unique_complements.shape)
+converted = kmer_hashes_to_ascii(kmers)
+size = converted.size
+print(f"converted.shape={converted.shape}, converted.dtype={converted.dtype}")
+print(converted)
+print()
+print(converted)
+print()
+print()
+
+x1 = np.array([chr(x) for x in range(127)])[converted]
+x2 = np.array([chr(x) for x in range(127)])[converted]
+
+print(x1)
+print()
+print(x2)

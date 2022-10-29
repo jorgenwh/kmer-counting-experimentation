@@ -9,39 +9,6 @@ import cupy as cp
 import npstructures as nps
 import bionumpy as bnp
 
-xp = cp
-
-if xp.__name__ == "cupy":
-    nps.set_backend(cp)
-    bnp.set_backend(cp)
-
-def counter_from_file(filename):
-    from shared_memory_wrapper import from_file
-    obj = from_file(filename)
-    return obj.counter
-
-def time_hash(verbose=False):
-    n = 0
-    t1 = time.time()
-
-    for chunk in bnp.open(sys.argv[1]):
-        name = chunk.name
-        sequence = chunk.sequence # raggedarray where each row is a sequence of len 150 (a read)
-
-        kmers = bnp.kmers.fast_hash(sequence, 31, bnp.encodings.ACTGEncoding)
-
-        n += 1
-        if n >= 100:
-            break
-
-        if verbose:
-            print(f"chunks processed: {n}", end="\r")
-
-    t2 = time.time()
-    if verbose:
-        print(f"chunks processed: {n}")
-    return t2 - t1
-
 if __name__ == "__main__":
     obj = np.load("data/npz/counter_index_only_variants_with_revcomp.npz")
 
