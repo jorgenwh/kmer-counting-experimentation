@@ -18,16 +18,32 @@ namespace py = pybind11;
 PYBIND11_MODULE(accounters_C, m) {
   m.doc() = "...";
 
+  m.def("get_reverse_complements", [](py::array_t<uint64_t> &kmers, uint32_t kmer_size) {
+      py::buffer_info buf = kmers.request();
+
+      const uint64_t *kmers_data = (uint64_t *)kmers.data();
+      const uint32_t size = kmers.size();
+
+      auto ret = py::array_t<uint64_t>(buf.size);
+      uint64_t *revcomps = ret.mutable_data();
+      memset(revcomps, 0, sizeof(uint64_t)*size);
+
+      get_revcomps(kmers_data, revcomps, size);
+
+      return ret;
+  });
+
   m.def("ascii_to_kmer_hashes", [](std::string &kmers, uint32_t kmer_size) {
     uint32_t num_kmers = kmers.size() / kmer_size;
-
-    auto shape = std::vector<size_t>({num_kmers});
-    auto ret = py::array_t<uint8_t>(shape);
-
-    uint8_t *ret_data = ret.mutable_data();
     const char *bases = kmers.c_str();
 
-    encode_kmers(bases, ret_data, kmer_size);
+    auto shape = std::vector<size_t>({num_kmers});
+    auto ret = py::array_t<uint64_t>(shape);
+
+    uint64_t *ret_data = ret.mutable_data();
+    memset(ret_data, 0, sizeof(uint64_t)*num_kmers);
+
+    encode_kmers(bases, num_kmers, ret_data, kmer_size);
 
     return ret;
   });
