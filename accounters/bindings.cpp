@@ -18,7 +18,7 @@ namespace py = pybind11;
 PYBIND11_MODULE(accounters_C, m) {
   m.doc() = "...";
 
-  m.def("get_reverse_complements", [](py::array_t<uint64_t> &kmers, uint32_t kmer_size) {
+  m.def("get_reverse_complements", [](py::array_t<uint64_t> &kmers, uint8_t kmer_size) {
       py::buffer_info buf = kmers.request();
 
       const uint64_t *kmers_data = (uint64_t *)kmers.data();
@@ -28,7 +28,7 @@ PYBIND11_MODULE(accounters_C, m) {
       uint64_t *revcomps = ret.mutable_data();
       memset(revcomps, 0, sizeof(uint64_t)*size);
 
-      get_revcomps(kmers_data, revcomps, size);
+      get_revcomps(kmers_data, revcomps, size, kmer_size);
 
       return ret;
   });

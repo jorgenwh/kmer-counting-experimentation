@@ -83,8 +83,8 @@ inline uint64_t word_reverse_complement(const uint64_t kmer, uint8_t kmer_size) 
   return (res >> (2 * (32 - kmer_size)));
 }
 
-void get_revcomps(const uint64_t *kmers, uint64_t *revcomps, const uint32_t size) {
+void get_revcomps(const uint64_t *kmers, uint64_t *revcomps, const uint32_t size, const uint8_t kmer_size) {
   for (int i = 0; i < size; i++) {
-    revcomps[i] = word_reverse_complement(kmers[i], 31);
+    revcomps[i] = word_reverse_complement(kmers[i], kmer_size);
   }
 }
