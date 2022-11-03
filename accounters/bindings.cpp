@@ -19,6 +19,18 @@ namespace py = pybind11;
 PYBIND11_MODULE(accounters_C, m) {
   m.doc() = "...";
 
+  m.def("test", []() {
+    uint64_t x = 0x3FFFFFFF00000002;
+
+    std::cout << std::bitset<64>(x) << "\n";
+    auto y = x << 3;
+    std::cout << std::bitset<64>(y) << "\n\n";
+
+    std::cout << std::bitset<64>(x) << "\n";
+    auto z = x >> 3;
+    std::cout << std::bitset<64>(z) << "\n";
+  });
+
   m.def("get_unique_complements", [](py::array_t<uint64_t> &kmers, const uint8_t kmer_size) {
     py::buffer_info buf = kmers.request();
 
@@ -68,6 +80,10 @@ PYBIND11_MODULE(accounters_C, m) {
     get_reverse_complements(kmers_data, revcomps, size, kmer_size);
 
     return ret;
+  });
+
+  m.def("word_reverse_complement", [](const uint64_t kmer, const uint8_t kmer_size) {
+    return word_reverse_complement(kmer, kmer_size);
   });
 
   py::class_<CuHashTable>(m, "CuHashTable")

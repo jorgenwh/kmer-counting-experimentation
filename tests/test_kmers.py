@@ -1,0 +1,1 @@
+from accounters.kmers import word_reverse_complement

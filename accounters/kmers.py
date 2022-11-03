@@ -14,28 +14,48 @@ def word_reverse_complement(kmer, kmer_size):
 def kmer_word_to_bitstring(kmer, kmer_size):
     empty_bits = 2 * (32 - kmer_size)
     bits = ""
-    for i in range(63 - empty_bits, -1, -1):
+    for i in range(63, -1, -1):
         bit = (1 << i) & int(kmer)
         bits += str(int(bool(bit)))
-    bits = ("-" * empty_bits) + bits
+    bits = "[" + bits[:empty_bits] + "]" + bits[empty_bits:]
+    #bits = ("-" * empty_bits) + bits
     return bits
 
 def bitstring_to_ACGT(bitstring):
-    ACGT_sequence = ""
-    for i in range(0, len(bitstring), 2):
+    if "[" not in bitstring and "]" not in bitstring:
+        ACGT_sequence = ""
+        for i in range(0, len(bitstring), 2):
+            bits = bitstring[i:(i+2)]
+            base = _bit_bases[bits]
+            ACGT_sequence += base
+        return ACGT_sequence
+
+    # TODO: fix
+    ACGT_sequence = "["
+    empty_bits = 0
+    while bitstring[empty_bits] != "]":
+        empty_bits += 1
+    empty_bits -= 1
+    
+    ACGT_sequence = "["
+    for i in range(1, empty_bits, 2):
+        bits = bitstring[i:(i+2)]
+        base = _bit_bases[bits]
+        ACGT_sequence += base
+    ACGT_sequence += "]"
+    for i in range(empty_bits+1, len(bitstring), 2):
         bits = bitstring[i:(i+2)]
         base = _bit_bases[bits]
         ACGT_sequence += base
     return ACGT_sequence
 
+
 def get_ACGT_reverse_complement(ACGT_sequence):
     revcomp = ""
-    b = 0
-    while ACGT_sequence[b] == "-":
-        revcomp += "-"
-        b += 1
+    empty_bases = 0
+    while ACGT_sequence[empty_bases] == "-":
+        empty_bases += 1
 
-    empty_bases = b
     for i in range(empty_bases, len(ACGT_sequence)):
         base = ACGT_sequence[i]
         revcomp += _complementary_bases[base]

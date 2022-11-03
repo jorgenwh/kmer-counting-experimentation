@@ -24,6 +24,7 @@ enum {
 extern uint8_t shifts8b[4];
 extern uint8_t shifts64b[32];
 
+inline uint64_t word_reverse_complement(const uint64_t kmer, const uint8_t kmer_size);
 void get_reverse_complements(const uint64_t *kmers, uint64_t *revcomps, const uint32_t size, const uint8_t kmer_size);
 void convert_ACTG_to_ACGT_encoding(const uint64_t *kmers, uint64_t *ret, const uint32_t size);
 std::unordered_set<uint64_t> get_unique_complements_set(const uint64_t *kmers, const uint32_t size, const uint8_t kmer_size);

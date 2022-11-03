@@ -21,29 +21,21 @@ uint8_t shifts64b[32] = {
   12, 10, 8, 6, 4, 2, 0
 };
 
-inline uint64_t kmer_reverse_complement(const uint64_t kmer, uint8_t kmer_size) {
+inline uint64_t word_reverse_complement(const uint64_t kmer, uint8_t kmer_size) {
   uint64_t res = ~kmer;
-
-  // Nicen't
-  uint64_t mask = 1;
-  if (kmer_size != 32) {
-    mask = (mask << kmer_size*2) - 1;
-  } else {
-    mask -= 2;
-  }
 
   res = ((res >> 2 & 0x3333333333333333) | (res & 0x3333333333333333) << 2);
   res = ((res >> 4 & 0x0F0F0F0F0F0F0F0F) | (res & 0x0F0F0F0F0F0F0F0F) << 4);
   res = ((res >> 8 & 0x00FF00FF00FF00FF) | (res & 0x00FF00FF00FF00FF) << 8);
   res = ((res >> 16 & 0x0000FFFF0000FFFF) | (res & 0x0000FFFF0000FFFF) << 16);
   res = ((res >> 32 & 0x00000000FFFFFFFF) | (res & 0x00000000FFFFFFFF) << 32);
-  return (res >> (2 * (32 - kmer_size))) & mask;
+  return (res >> (2 * (32 - kmer_size)));
 }
 
 void get_reverse_complements(const uint64_t *kmers, uint64_t *revcomps, 
     const uint32_t size, const uint8_t kmer_size) {
   for (int i = 0; i < size; i++) {
-    revcomps[i] = kmer_reverse_complement(kmers[i], kmer_size);
+    revcomps[i] = word_reverse_complement(kmers[i], kmer_size);
   }
 }
 
@@ -75,7 +67,7 @@ std::unordered_set<uint64_t> get_unique_complements_set(const uint64_t *kmers, c
   for (int i = 0; i < size; i++) {
     std::cout << i << "/" << size << "\r";
     uint64_t kmer = kmers[i];
-    uint64_t revcomp = kmer_reverse_complement(kmer, kmer_size);
+    uint64_t revcomp = word_reverse_complement(kmer, kmer_size);
     if ((uniques.find(kmer) != uniques.end()) || (uniques.find(revcomp) != uniques.end())) {
       continue;
     }
