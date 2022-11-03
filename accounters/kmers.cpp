@@ -3,7 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include <iostream>
-#include <bitset>
+#include <unordered_set>
 
 #include "kmers.h"
 
@@ -19,6 +19,16 @@ uint8_t shifts64b[32] = {
   22, 20, 18, 16, 14, 
   12, 10, 8, 6, 4, 2, 0
 };
+
+inline uint64_t kmer_reverse_complement(const uint64_t kmer, uint8_t kmer_size) {
+  uint64_t res = ~kmer;
+  res = ((res >> 2 & 0x3333333333333333) | (res & 0x3333333333333333) << 2);
+  res = ((res >> 4 & 0x0F0F0F0F0F0F0F0F) | (res & 0x0F0F0F0F0F0F0F0F) << 4);
+  res = ((res >> 8 & 0x00FF00FF00FF00FF) | (res & 0x00FF00FF00FF00FF) << 8);
+  res = ((res >> 16 & 0x0000FFFF0000FFFF) | (res & 0x0000FFFF0000FFFF) << 16);
+  res = ((res >> 32 & 0x00000000FFFFFFFF) | (res & 0x00000000FFFFFFFF) << 32);
+  return (res >> (2 * (32 - kmer_size)));
+}
 
 void hashes_to_ascii(const uint64_t *hashes, const uint64_t num_hashes, 
     uint8_t *bases, const uint64_t num_bases) {
@@ -46,7 +56,8 @@ void hashes_to_ascii(const uint64_t *hashes, const uint64_t num_hashes,
   }
 }
 
-void encode_kmers(const char *bases, const uint32_t num_kmers, uint64_t *kmers, const uint32_t kmer_size) {
+void encode_kmers(const char *bases, const uint32_t num_kmers, 
+    uint64_t *kmers, const uint32_t kmer_size) {
   uint64_t num_bases = num_kmers * kmer_size;
 
   for (uint64_t i = 0; i < num_bases; i++) {
@@ -73,18 +84,47 @@ void encode_kmers(const char *bases, const uint32_t num_kmers, uint64_t *kmers, 
   }
 }
 
-inline uint64_t word_reverse_complement(const uint64_t kmer, uint8_t kmer_size) {
-  uint64_t res = ~kmer;
-  res = ((res >> 2 & 0x3333333333333333) | (res & 0x3333333333333333) << 2);
-  res = ((res >> 4 & 0x0F0F0F0F0F0F0F0F) | (res & 0x0F0F0F0F0F0F0F0F) << 4);
-  res = ((res >> 8 & 0x00FF00FF00FF00FF) | (res & 0x00FF00FF00FF00FF) << 8);
-  res = ((res >> 16 & 0x0000FFFF0000FFFF) | (res & 0x0000FFFF0000FFFF) << 16);
-  res = ((res >> 32 & 0x00000000FFFFFFFF) | (res & 0x00000000FFFFFFFF) << 32);
-  return (res >> (2 * (32 - kmer_size)));
+void get_reverse_complements(const uint64_t *kmers, uint64_t *revcomps, 
+    const uint32_t size, const uint8_t kmer_size) {
+  for (int i = 0; i < size; i++) {
+    revcomps[i] = kmer_reverse_complement(kmers[i], kmer_size);
+  }
 }
 
-void get_revcomps(const uint64_t *kmers, uint64_t *revcomps, const uint32_t size, const uint8_t kmer_size) {
+void convert_ACTG_to_ACGT_encoding(const uint64_t *kmers, uint64_t *ret, const uint32_t size) {
   for (int i = 0; i < size; i++) {
-    revcomps[i] = word_reverse_complement(kmers[i], kmer_size);
+    for (int j = 0; j < 32; j++) {
+      uint64_t shift = shifts64b[j];
+      uint64_t mask = BASE_MASK << shift;
+      uint64_t bitbase = (kmers[i] & mask) >> shift;
+
+      switch (bitbase) {
+        case BASE_G:
+          bitbase = BASE_T;
+          break;
+        case BASE_T:
+          bitbase = BASE_G;
+          break;
+      }
+
+      ret[i] |= (bitbase << shift);
+    }
+    std::cout << i << "/" << size << "\r";
   }
+  std::cout << size << "/" << size << "\n";
+}
+
+std::unordered_set<uint64_t> get_unique_complements_set(const uint64_t *kmers, const uint32_t size) {
+  std::unordered_set<uint64_t> uniques;
+
+  for (int i = 0; i < size; i++) {
+    uint64_t kmer = kmers[i];
+    uint64_t revcomp = kmer_reverse_complement(kmer, 31);
+    if ((uniques.find(kmer) != uniques.end()) || (uniques.find(revcomp) != uniques.end())) {
+      continue;
+    }
+    uniques.insert(kmer);
+  }
+
+  return uniques;
 }

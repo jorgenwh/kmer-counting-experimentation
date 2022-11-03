@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <iostream>
 #include <bitset>
+#include <unordered_set>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -18,19 +19,55 @@ namespace py = pybind11;
 PYBIND11_MODULE(accounters_C, m) {
   m.doc() = "...";
 
+  m.def("get_unique_complements", [](py::array_t<uint64_t> &kmers) {
+    py::buffer_info buf = kmers.request();
+
+    const uint64_t *kmers_data = (uint64_t *)kmers.data();
+    const uint32_t size = kmers.size();
+
+    std::unordered_set<uint64_t> unique_complements = get_unique_complements_set(kmers_data, size);
+
+    const uint32_t unqcomp_size = unique_complements.size();
+    auto ret = py::array_t<uint64_t>({unqcomp_size});
+    uint64_t *unique_complements_data = ret.mutable_data();
+
+    int i = 0;
+    for (const auto &kmer: unique_complements) {
+      unique_complements_data[i] = kmer;
+      i++;
+    }
+
+    return ret;
+  });
+
+  m.def("ACTG_to_ACGT", [](py::array_t<uint64_t> &kmers) {
+    py::buffer_info buf = kmers.request();
+
+    const uint64_t *kmers_data = (uint64_t *)kmers.data();
+    const uint32_t size = kmers.size();
+
+    auto ret = py::array_t<uint64_t>(buf.size);
+    uint64_t *ret_data = ret.mutable_data();
+    memset(ret_data, 0, sizeof(uint64_t)*size);
+
+    convert_ACTG_to_ACGT_encoding(kmers_data, ret_data, size);
+
+    return ret;
+  });
+
   m.def("get_reverse_complements", [](py::array_t<uint64_t> &kmers, uint8_t kmer_size) {
-      py::buffer_info buf = kmers.request();
+    py::buffer_info buf = kmers.request();
 
-      const uint64_t *kmers_data = (uint64_t *)kmers.data();
-      const uint32_t size = kmers.size();
+    const uint64_t *kmers_data = (uint64_t *)kmers.data();
+    const uint32_t size = kmers.size();
 
-      auto ret = py::array_t<uint64_t>(buf.size);
-      uint64_t *revcomps = ret.mutable_data();
-      memset(revcomps, 0, sizeof(uint64_t)*size);
+    auto ret = py::array_t<uint64_t>(buf.size);
+    uint64_t *revcomps = ret.mutable_data();
+    memset(revcomps, 0, sizeof(uint64_t)*size);
 
-      get_revcomps(kmers_data, revcomps, size, kmer_size);
+    get_reverse_complements(kmers_data, revcomps, size, kmer_size);
 
-      return ret;
+    return ret;
   });
 
   m.def("ascii_to_kmer_hashes", [](std::string &kmers, uint32_t kmer_size) {
