@@ -14,10 +14,10 @@ def word_reverse_complement(kmer, kmer_size):
 def kmer_word_to_bitstring(kmer, kmer_size):
     empty_bits = 2 * (32 - kmer_size)
     bits = ""
-    for i in range(empty_bits, 64):
+    for i in range(63 - empty_bits, -1, -1):
         bit = (1 << i) & int(kmer)
         bits += str(int(bool(bit)))
-    bits = ("-" * empty_bits) + bits[::-1]
+    bits = ("-" * empty_bits) + bits
     return bits
 
 def bitstring_to_ACGT(bitstring):

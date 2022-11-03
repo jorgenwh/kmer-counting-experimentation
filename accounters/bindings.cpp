@@ -19,13 +19,13 @@ namespace py = pybind11;
 PYBIND11_MODULE(accounters_C, m) {
   m.doc() = "...";
 
-  m.def("get_unique_complements", [](py::array_t<uint64_t> &kmers) {
+  m.def("get_unique_complements", [](py::array_t<uint64_t> &kmers, const uint8_t kmer_size) {
     py::buffer_info buf = kmers.request();
 
     const uint64_t *kmers_data = (uint64_t *)kmers.data();
     const uint32_t size = kmers.size();
 
-    std::unordered_set<uint64_t> unique_complements = get_unique_complements_set(kmers_data, size);
+    std::unordered_set<uint64_t> unique_complements = get_unique_complements_set(kmers_data, size, kmer_size);
 
     const uint32_t unqcomp_size = unique_complements.size();
     auto ret = py::array_t<uint64_t>({unqcomp_size});
@@ -40,17 +40,17 @@ PYBIND11_MODULE(accounters_C, m) {
     return ret;
   });
 
-  m.def("ACTG_to_ACGT", [](py::array_t<uint64_t> &kmers) {
+  m.def("convert_ACTG_to_ACGT_encoding", [](py::array_t<uint64_t> &kmers) {
     py::buffer_info buf = kmers.request();
 
-    const uint64_t *kmers_data = (uint64_t *)kmers.data();
+    const uint64_t *kmer_data = (uint64_t *)kmers.data();
     const uint32_t size = kmers.size();
 
     auto ret = py::array_t<uint64_t>(buf.size);
     uint64_t *ret_data = ret.mutable_data();
     memset(ret_data, 0, sizeof(uint64_t)*size);
 
-    convert_ACTG_to_ACGT_encoding(kmers_data, ret_data, size);
+    convert_ACTG_to_ACGT_encoding(kmer_data, ret_data, size);
 
     return ret;
   });
@@ -66,34 +66,6 @@ PYBIND11_MODULE(accounters_C, m) {
     memset(revcomps, 0, sizeof(uint64_t)*size);
 
     get_reverse_complements(kmers_data, revcomps, size, kmer_size);
-
-    return ret;
-  });
-
-  m.def("ascii_to_kmer_hashes", [](std::string &kmers, uint32_t kmer_size) {
-    uint32_t num_kmers = kmers.size() / kmer_size;
-    const char *bases = kmers.c_str();
-
-    auto shape = std::vector<size_t>({num_kmers});
-    auto ret = py::array_t<uint64_t>(shape);
-
-    uint64_t *ret_data = ret.mutable_data();
-    memset(ret_data, 0, sizeof(uint64_t)*num_kmers);
-
-    encode_kmers(bases, num_kmers, ret_data, kmer_size);
-
-    return ret;
-  });
-
-  m.def("kmer_hashes_to_ascii", [](py::array_t<uint64_t> &kmers) {
-    const uint64_t *hashes = kmers.data();
-    const uint64_t size = kmers.size();
-
-    auto shape = std::vector<size_t>({size, 32});
-    auto ret = py::array_t<uint8_t>(shape);
-    uint8_t *ret_data = ret.mutable_data();
-
-    hashes_to_ascii(hashes, size, ret_data, size*32);
 
     return ret;
   });
