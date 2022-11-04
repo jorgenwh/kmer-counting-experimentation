@@ -28,7 +28,7 @@ def visual_sanity_check():
         revcomp_bits = kmer_word_to_bitstring(revcomp, kmer_size)
         revcomp_seq = bitstring_to_ACGT(revcomp_bits)
 
-        print("\n"*50)
+        print("\n"*75)
         print(f"kmer_size={kmer_size}")
         print("\nkmer and revcomp bits")
         print(kmer_bits)

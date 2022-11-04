@@ -17,49 +17,25 @@ def kmer_word_to_bitstring(kmer, kmer_size):
     for i in range(63, -1, -1):
         bit = (1 << i) & int(kmer)
         bits += str(int(bool(bit)))
-    bits = "[" + bits[:empty_bits] + "]" + bits[empty_bits:]
-    #bits = ("-" * empty_bits) + bits
+
+    if empty_bits:
+        bits = "[" + bits[:empty_bits] + "]" + bits[empty_bits:]
+
     return bits
 
 def bitstring_to_ACGT(bitstring):
     if "[" not in bitstring and "]" not in bitstring:
-        ACGT_sequence = ""
-        for i in range(0, len(bitstring), 2):
-            bits = bitstring[i:(i+2)]
-            base = _bit_bases[bits]
-            ACGT_sequence += base
-        return ACGT_sequence
+        return "".join([_bit_bases[bitstring[i:(i+2)]] for i in range(0, len(bitstring), 2)])
 
-    # TODO: fix
-    ACGT_sequence = "["
-    empty_bits = 0
-    while bitstring[empty_bits] != "]":
-        empty_bits += 1
-    empty_bits -= 1
-    
-    ACGT_sequence = "["
-    for i in range(1, empty_bits, 2):
-        bits = bitstring[i:(i+2)]
-        base = _bit_bases[bits]
-        ACGT_sequence += base
-    ACGT_sequence += "]"
-    for i in range(empty_bits+1, len(bitstring), 2):
-        bits = bitstring[i:(i+2)]
-        base = _bit_bases[bits]
-        ACGT_sequence += base
-    return ACGT_sequence
-
+    discarded_bases = "".join([_bit_bases[bitstring[i:(i+2)]] for i in range(bitstring.index("[")+1, bitstring.index("]"), 2)])
+    bases = "".join([_bit_bases[bitstring[i:(i+2)]] for i in range(bitstring.index("]")+1, len(bitstring), 2)])
+    return "[" + discarded_bases + "]" + bases
 
 def get_ACGT_reverse_complement(ACGT_sequence):
-    revcomp = ""
-    empty_bases = 0
-    while ACGT_sequence[empty_bases] == "-":
-        empty_bases += 1
+    if "[" not in ACGT_sequence and "]" not in ACGT_sequence:
+        return "".join([_complementary_bases[ACGT_sequence[i]] for i in range(len(ACGT_sequence)-1, -1, -1)])
 
-    for i in range(empty_bases, len(ACGT_sequence)):
-        base = ACGT_sequence[i]
-        revcomp += _complementary_bases[base]
-    
-    revcomp = ("-" * empty_bases) + revcomp[::-1]
-    return revcomp
+    discarded_bases = "A" * ((ACGT_sequence.index("]") - ACGT_sequence.index("[")) - 1)
+    bases = "".join([_complementary_bases[ACGT_sequence[i]] for i in range(len(ACGT_sequence)-1, ACGT_sequence.index("]"), -1)])
+    return "[" + discarded_bases + "]" + bases
 
