@@ -1,7 +1,7 @@
-#from . import counters
-#from .counters import CuCounter
-#from .counters import CppCounter
-#from .counters import CupyCounter
+from . import counters
+from .counters import CuCounter
+from .counters import CppCounter
+from .counters import CupyCounter
 
 from . import kmers
 from .kmers import word_reverse_complement

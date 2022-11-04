@@ -70,7 +70,7 @@ def benchmark(counter_type, xp, num_keys, chunk_size, counter_capacity):
         try:
             t = time.time()
             chunk = next(chunk_generator) 
-            #cp.cuda.runtime.deviceSynchronize()
+            cp.cuda.runtime.deviceSynchronize()
             chunk_t += (time.time() - t)
         except StopIteration:
             break
@@ -84,7 +84,7 @@ def benchmark(counter_type, xp, num_keys, chunk_size, counter_capacity):
 
         t = time.time()
         counter.count(kmers)
-        #cp.cuda.runtime.deviceSynchronize()
+        cp.cuda.runtime.deviceSynchronize()
         count_t += (time.time() - t)
 
         num_chunks+=1

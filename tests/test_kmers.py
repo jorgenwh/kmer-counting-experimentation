@@ -1,5 +1,8 @@
+import numpy as np
+
 from accounters.kmers import word_reverse_complement
 from accounters import word_reverse_complement_C 
+from accounters import get_reverse_complements
 
 from accounters import kmer_word_to_bitstring
 from accounters import bitstring_to_ACGT
@@ -16,6 +19,18 @@ def test_word_reverse_complement():
         revcomp_C = word_reverse_complement_C(word, kmer_size)
         revcomp_expected = int("00"*kmer_size + revcomp_bits[:kmer_size*2], 2)
         assert revcomp_py == revcomp_C == revcomp_expected
+
+    for kmer_size in range(16, 32+1):
+        num_kmers = 10
+        kmers = np.random.randint(low=0, high=0xFFFFFFFFFFFFFFFF, size=num_kmers, dtype=np.uint64)
+        revcomps = get_reverse_complements(kmers, kmer_size)
+
+        for i in range(num_kmers):
+            kmer = int(kmers[i])
+            revcomp = int(revcomps[i])
+            revcomp_py = word_reverse_complement(kmer, kmer_size)
+            revcomp_C = word_reverse_complement_C(kmer, kmer_size) 
+            assert revcomp == revcomp_py == revcomp_C
 
 def test_bitstring_to_ACGT():
     bitstring1 = "0101100110010101101000100001111001001001010111001001011100000001"
