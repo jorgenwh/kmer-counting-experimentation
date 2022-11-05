@@ -99,27 +99,29 @@ def create_random_dataset(num_kmers=1000000, revcomp_prob=0.8):
     return kmers, revcomps, unique_kmers
         
 def main():
-    #keys, _, unique_kmers = create_random_dataset(num_kmers=1000, revcomp_prob=0.8)
-    keys = np.array([int("0001111010011010111011011100010101110100110000000011010100011011", 2)], dtype=np.uint64)
+    keys, _, unique_kmers = create_random_dataset(num_kmers=1000, revcomp_prob=0.8)
+    #keys = np.array([int("0001111010011010111011011100010101110100110000000011010100011011", 2)], dtype=np.uint64)
     revcomps = get_reverse_complements(keys, 31)
 
-    print(keys)
-    print(revcomps)
+    #print(f"{keys[0]} -> {revcomps[0]}\n")
 
     print("Asserting keys contain no revcomps...")
     assert_no_revcomps(keys, 31)
-    print("Passed")
+    print("Passed\n")
 
-    counter = CuCounter(keys=keys, capacity=2)
+    counter = CuCounter(keys=keys)
+    #print(counter, end="\n\n")
 
     # Counts share indices with keys
     counts = np.zeros_like(keys)
 
     chunk_size = 1000
-    #kmers = np.random.choice(unique_kmers, size=chunk_size)
-    kmers = revcomps
+    kmers = np.random.choice(unique_kmers, size=chunk_size)
+    #kmers = revcomps 
 
+    #print(f"Counting kmers = {kmers}, with revcomps = {get_reverse_complements(kmers, 31)}")
     counter.count(kmers)  
+    #print(counter)
 
     for kmer in kmers:
         revcomp = word_reverse_complement(int(kmer), 31)
@@ -128,7 +130,9 @@ def main():
                 counts[i] += 1
                 break
 
+    print("\nAsserting counts...")
     np.testing.assert_equal(counter[keys], counts) 
+    print("Passed")
 
 
 if __name__ == "__main__":

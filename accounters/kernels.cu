@@ -90,15 +90,30 @@ __global__ void count_hashtable_kernel(
 
   if (thread_id < size) {
     uint64_t key = keys[thread_id];
-    uint64_t revcomp = word_reverse_complement(key, 31);
     uint64_t hash = key % capacity;
 
-    printf("%llu -> %llu\n", key, revcomp);
+    //printf("%llu -> %llu\n", key, revcomp);
 
+    // Search for original key
+    while (true) {
+      uint64_t cur_key = table.keys[hash];
+      if (cur_key == kEmpty) { break; }
+      if (cur_key == key) {
+        atomicAdd((unsigned int *)&(table.values[hash]), 1);
+        return;
+      }
+
+      hash = (hash + 1) % capacity;
+    }
+
+    key = word_reverse_complement(key, 31);
+    hash = key % capacity;
+
+    // Search for reverse complement of key
     while (true) {
       uint64_t cur_key = table.keys[hash];
       if (cur_key == kEmpty) { return; }
-      if (cur_key == key || cur_key == revcomp) {
+      if (cur_key == key) {
         atomicAdd((unsigned int *)&(table.values[hash]), 1);
         return;
       }
