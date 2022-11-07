@@ -24,8 +24,8 @@ public:
   uint32_t size() const { return size_m; }
   uint32_t capacity() const { return capacity_m; }
 
-  void count(const uint64_t *keys, const uint32_t size);
-  void countcu(const uint64_t *keys, const uint32_t size);
+  void count(const uint64_t *keys, const uint32_t size, const bool count_revcomps, const uint8_t kmer_size);
+  void countcu(const uint64_t *keys, const uint32_t size, const bool count_revcomps, const uint8_t kmer_size);
 
   void get(const uint64_t *keys, uint32_t *counts, uint32_t size) const;
   void getcu(const uint64_t *keys, uint32_t *counts, uint32_t size) const;

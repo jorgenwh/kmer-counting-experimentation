@@ -61,17 +61,19 @@ void CuHashTable::getcu(const uint64_t *keys, uint32_t *counts, uint32_t size) c
   lookup_hashtable(table_m, keys, counts, size, capacity_m); 
 }
 
-void CuHashTable::count(const uint64_t *keys, const uint32_t size) {
+void CuHashTable::count(const uint64_t *keys, const uint32_t size, 
+    const bool count_revcomps, const uint8_t kmer_size) {
   uint64_t *d_keys;
   cuda_errchk(cudaMalloc(&d_keys, sizeof(uint64_t)*size));
   cuda_errchk(cudaMemcpy(d_keys, keys, sizeof(uint64_t)*size, cudaMemcpyHostToDevice));
 
-  count_hashtable(table_m, d_keys, size, capacity_m);
+  count_hashtable(table_m, d_keys, size, capacity_m, count_revcomps, kmer_size);
   cuda_errchk(cudaFree(d_keys));
 }
 
-void CuHashTable::countcu(const uint64_t *keys, const uint32_t size) {
-  count_hashtable(table_m, keys, size, capacity_m);
+void CuHashTable::countcu(const uint64_t *keys, const uint32_t size, 
+    const bool count_revcomps, const uint8_t kmer_size) {
+  count_hashtable(table_m, keys, size, capacity_m, count_revcomps, kmer_size);
 }
 
 std::string CuHashTable::to_string() const {

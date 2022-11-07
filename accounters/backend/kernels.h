@@ -10,7 +10,9 @@
 #include "cu_common.h"
 
 void init_hashtable(Table table, const uint64_t *keys, const uint32_t size, const uint32_t capacity);
-void count_hashtable(Table table, const uint64_t *keys, const uint32_t size, const uint32_t capacity);
+
+void count_hashtable(Table table, const uint64_t *keys, const uint32_t size, const uint32_t capacity, const bool count_revcomps, const uint8_t kmer_size);
+
 void lookup_hashtable(Table table, const uint64_t *keys, uint32_t *counts, const uint32_t size, const uint32_t capacity); 
 
 #endif // KERNELS_H_

@@ -85,46 +85,50 @@ void lookup_hashtable(Table table,
 }
 
 __global__ void count_hashtable_kernel(
-    Table table, const uint64_t *keys, const uint32_t size, const uint32_t capacity) {
+    Table table, const uint64_t *keys, const uint32_t size, const uint32_t capacity, 
+    const bool count_revcomps, const uint8_t kmer_size) {
   int thread_id = blockIdx.x * blockDim.x + threadIdx.x;
 
   if (thread_id < size) {
+    // Search for original key
     uint64_t key = keys[thread_id];
     uint64_t hash = key % capacity;
 
-    //printf("%llu -> %llu\n", key, revcomp);
-
-    // Search for original key
     while (true) {
       uint64_t cur_key = table.keys[hash];
-      if (cur_key == kEmpty) { break; }
+      if (cur_key == kEmpty) { 
+        break; 
+      }
       if (cur_key == key) {
         atomicAdd((unsigned int *)&(table.values[hash]), 1);
         return;
       }
-
       hash = (hash + 1) % capacity;
     }
 
-    key = word_reverse_complement(key, 31);
-    hash = key % capacity;
+    if (count_revcomps) {
+      // Search for reverse complement of key
+      key = word_reverse_complement(key, kmer_size);
+      hash = key % capacity;
 
-    // Search for reverse complement of key
-    while (true) {
-      uint64_t cur_key = table.keys[hash];
-      if (cur_key == kEmpty) { return; }
-      if (cur_key == key) {
-        atomicAdd((unsigned int *)&(table.values[hash]), 1);
-        return;
+      while (true) {
+        uint64_t cur_key = table.keys[hash];
+        if (cur_key == kEmpty) { 
+          return;
+        }
+        if (cur_key == key) {
+          atomicAdd((unsigned int *)&(table.values[hash]), 1);
+          return;
+        }
+        hash = (hash + 1) % capacity;
       }
-
-      hash = (hash + 1) % capacity;
     }
   }
 }
 
 void count_hashtable(
-    Table table, const uint64_t *keys, const uint32_t size, const uint32_t capacity) {
+    Table table, const uint64_t *keys, const uint32_t size, const uint32_t capacity, 
+    const bool count_revcomps, const uint8_t kmer_size) {
   int min_grid_size;
   int thread_block_size = 512;
   /*cuda_errchk(cudaOccupancyMaxPotentialBlockSize(
@@ -132,7 +136,8 @@ void count_hashtable(
       count_hashtable_kernel, 0, 0));*/
 
   int grid_size = size / thread_block_size + (size % thread_block_size > 0);
-  count_hashtable_kernel<<<grid_size, thread_block_size>>>(table, keys, size, capacity);
+  count_hashtable_kernel<<<grid_size, thread_block_size>>>(
+      table, keys, size, capacity, count_revcomps, kmer_size);
   //cuda_errchk(cudaDeviceSynchronize());
 }
 

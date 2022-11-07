@@ -20,11 +20,12 @@ parser.add_argument("-backend", choices=["numpy", "cupy"], required=True)
 parser.add_argument("-num_keys", type=int, required=True)
 parser.add_argument("-chunk_size", type=int, required=True)
 parser.add_argument("-counter_capacity", type=int, default=0)
+parser.add_argument("--count_revcomps", action="store_true")
 
 args = parser.parse_args()
 
 fasta_filename = "data/fa/testreads20m.fa"
-keys_filename = "data/npy/uniquekmers.npy"
+keys_filename = "data/npy/uniquekmersACGT.npy"
 
 counter_types = {
         "cu"   : CuCounter,
@@ -34,7 +35,8 @@ counter_types = {
 }
 
 
-def benchmark(counter_type, xp, num_keys, chunk_size, counter_capacity):
+def benchmark(counter_type, xp, num_keys, chunk_size, 
+        counter_capacity, count_revcomps):
     print("-"*shutil.get_terminal_size().columns)
     print("<<<        INFO        >>>")
     print(f"COUNTER                : {counter_type}")
@@ -42,6 +44,10 @@ def benchmark(counter_type, xp, num_keys, chunk_size, counter_capacity):
     print(f"NUM_KEYS               : {num_keys}")
     print(f"CHUNK_SIZE             : {chunk_size}")
     print(f"COUNTER_CAPACITY       : {counter_capacity}")
+    print(f"COUNT_REVCOMPS         : {count_revcomps}")
+
+    if count_revcomps:
+        keys_filename = "data/npy/revcomps_randgen.npy"
 
     keys = np.load(keys_filename)[:num_keys]
     keys = xp.asanyarray(keys)
@@ -84,6 +90,7 @@ def benchmark(counter_type, xp, num_keys, chunk_size, counter_capacity):
 
         t = time.time()
         counter.count(kmers)
+        #counter.count(kmers, count_revcomps=True, kmer_size=31)
         cp.cuda.runtime.deviceSynchronize()
         count_t += (time.time() - t)
 
@@ -117,6 +124,7 @@ if __name__ == "__main__":
             xp=array_module, 
             num_keys=args.num_keys, 
             chunk_size=args.chunk_size,
-            counter_capacity=args.counter_capacity
+            counter_capacity=args.counter_capacity,
+            count_revcomps=args.count_revcomps
     )
 

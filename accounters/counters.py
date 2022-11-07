@@ -21,13 +21,14 @@ class CuCounter(CuHashTable):
         elif isinstance(keys, cp.ndarray):
             super().__init__(keys.data.ptr, keys.size, capacity)
 
-    def count(self, keys):
+    def count(self, keys, count_revcomps=False, kmer_size=32):
         assert isinstance(keys, (np.ndarray, cp.ndarray)), "Invalid key type"
+        assert kmer_size > 0 and kmer_size <= 32, "kmer size must be 32 >= size > 0"
 
         if isinstance(keys, np.ndarray):
-            super().count(keys)
+            super().count(keys, count_revcomps, kmer_size)
         elif isinstance(keys, cp.ndarray):
-            super().count(keys.data.ptr, keys.size)
+            super().count(keys.data.ptr, keys.size, count_revcomps, kmer_size)
 
     def __getitem__(self, keys):
         assert isinstance(keys, (np.ndarray, cp.ndarray)), "Invalid key type"

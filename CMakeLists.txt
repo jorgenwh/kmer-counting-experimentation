@@ -8,7 +8,7 @@ set(CMAKE_CUDA_ARCHITECTURES "75")
 set(CMAKE_CXX_FLAGS "-O3 -pthread")
 set(CMAKE_CUDA_FLAGS "-O3")
 
-set(SOURCE_DIR "accounters")
+set(SOURCE_DIR "accounters/backend")
 include_directories(${SOURCE_DIR})
 
 set(SOURCES 
@@ -16,7 +16,6 @@ set(SOURCES
   "${SOURCE_DIR}/cuhashtable.cu"
   "${SOURCE_DIR}/cpphashtable.cpp"
   "${SOURCE_DIR}/kmers.cpp"
-  #"${SOURCE_DIR}/revcomp.cpp"
 )
 
 pybind11_add_module(${PROJECT_NAME} ${SOURCES} "${SOURCE_DIR}/bindings.cpp")

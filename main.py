@@ -85,6 +85,9 @@ def create_random_dataset(num_kmers=1000000, revcomp_prob=0.8):
         if kmer not in kmers and revcomp not in kmers:
             kmers.append(kmer)
 
+        print(f"{len(kmers)}/{num_kmers}", end="\r")
+    print(f"{len(kmers)}/{num_kmers}")
+
     kmers = np.array(kmers, dtype=np.uint64)
 
     revcomps = np.random.choice(kmers, size=int(num_kmers*revcomp_prob), replace=False)
@@ -95,7 +98,7 @@ def create_random_dataset(num_kmers=1000000, revcomp_prob=0.8):
     unique_kmers = np.unique(all_kmers)
     assert unique_kmers.dtype == np.uint64
 
-    #np.save("data/npy/uniquekmers_randgen.npy", unique_kmers)
+    np.save("data/npy/revcomps_randgen.npy", unique_kmers)
     return kmers, revcomps, unique_kmers
         
 def main():
@@ -136,5 +139,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    #main()
+    create_random_dataset(num_kmers=87000000, revcomp_prob=0.75) # 152.25M kmers
     

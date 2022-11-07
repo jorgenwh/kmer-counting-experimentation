@@ -55,3 +55,7 @@ reversed_bits = get_bits(y[0], 64)
 assert reversed_bits[::-1] == original_bits
 print("Assert passed")
 
+if __name__ == "__main__":
+    pass
+
+
