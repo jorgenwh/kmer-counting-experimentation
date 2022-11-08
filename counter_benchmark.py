@@ -37,6 +37,8 @@ counter_types = {
 
 def benchmark(counter_type, xp, num_keys, chunk_size, 
         counter_capacity, count_revcomps):
+    global keys_filename
+
     print("-"*shutil.get_terminal_size().columns)
     print("<<<        INFO        >>>")
     print(f"COUNTER                : {counter_type}")
